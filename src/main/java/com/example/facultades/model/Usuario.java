@@ -1,0 +1,49 @@
+package com.example.facultades.model;
+
+import com.example.facultades.generics.BaseEntity;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+public class Usuario extends BaseEntity {
+    /*@Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long idUsuario;*/
+    private String username;
+    private String password;
+    private boolean enable;
+    private boolean accountNotExpired;
+    private boolean accountNotLocked;
+    private boolean credentialNotExpired;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "rol_id"))
+    private List<Rol> listaRoles = new ArrayList<>();
+
+    @OneToMany()
+    private List<Universidad> listaUniversidad;
+
+    @OneToMany()
+    private List<Calificacion> listaCalificacion;
+
+    @OneToMany()
+    private List<Comentario> listaComentarios;
+
+    @OneToMany()
+    private  List<Respuesta> listaRespuesta;
+
+    @OneToMany()
+    private List<Reaccion> listaReaccion;
+
+}

@@ -1,0 +1,16 @@
+package com.example.facultades.service;
+
+
+
+import com.example.facultades.model.Usuario;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface IUsuarioService {
+    public String encriptPassword(String password);
+    public Usuario saveUserOauth(String email);
+    public  Optional<Usuario> findUserEntityByusername(String username);
+    List<Usuario> getUsuarioListByRole(String nombreRol);
+
+}

@@ -1,0 +1,33 @@
+package com.example.facultades.model;
+
+import com.example.facultades.generics.BaseEntity;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class Notificacion extends BaseEntity {
+    /*@Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private  Long id;*/
+    private String informacion;
+    private Long idRedireccionamiento;
+    private Boolean leida;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "notificaciones_usuarios", joinColumns = @JoinColumn(name = "notificacion_id"),
+            inverseJoinColumns = @JoinColumn(name = "usuario_id"))
+    private List<Usuario> listaUsuarios = new ArrayList<>();
+
+    @OneToMany()
+    private List<UsuarioLeido> listaUsuariosLeidos = new ArrayList<>();
+}
