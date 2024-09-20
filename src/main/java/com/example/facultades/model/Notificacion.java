@@ -29,5 +29,5 @@ public class Notificacion extends BaseEntity {
     private List<Usuario> listaUsuarios = new ArrayList<>();
 
     @OneToMany()
-    private List<UsuarioLeido> listaUsuariosLeidos = new ArrayList<>();
+    private List<UsuarioLeido> listaDeusuariosLeidos = new ArrayList<>();
 }

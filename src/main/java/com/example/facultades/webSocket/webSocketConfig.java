@@ -1,5 +1,6 @@
 package com.example.facultades.webSocket;
 
+import com.example.facultades.enums.Socket;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -12,8 +13,7 @@ public class webSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry){
-        registry.enableSimpleBroker("/tema/admin", "/tema/usuario");
-
+        registry.enableSimpleBroker(Socket.BROKER.getRuta());
     }
 
     @Override

@@ -1,11 +1,24 @@
 package com.example.facultades.service;
+import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.model.Notificacion;
+import com.example.facultades.model.Usuario;
+import com.example.facultades.model.UsuarioLeido;
 import com.example.facultades.repository.INotificacionRepository;
+import com.example.facultades.repository.IUsuarioLeidoRepository;
+import com.example.facultades.repository.IUsuarioRepository;
 import com.example.facultades.util.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class NotificacionService extends GenericService<Notificacion, Long> implements INotificacionService, IEntidadAsociable<Notificacion> {
@@ -17,6 +30,18 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
 
     @Autowired
     private IRepositoryFactory repositoryFactory;
+
+    @Autowired
+    private IUsuarioRepository usuRepo;
+
+    @Autowired
+    private IUsuarioLeidoRepository usuarioLeidoRepository;
+
+    public NotificacionService(SimpMessagingTemplate messagingTemplate){
+        this.messagingTemplate = messagingTemplate;
+    }
+
+    private SimpMessagingTemplate messagingTemplate;
 
 
     @Override
@@ -34,59 +59,27 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
     @Override
     public void asociar(Notificacion notificacion) {
         notificacion.setListaUsuarios(asociarEntidades.relacionar(notificacion.getListaUsuarios(), repositoryFactory.generarRepositorio(NombreRepositorio.USUARIO.getRepoName())));
-        notificacion.setListaUsuariosLeidos(asociarEntidades.relacionar(notificacion.getListaUsuariosLeidos(), repositoryFactory.generarRepositorio(NombreRepositorio.USUARIO_LEIDO.getRepoName())));
-    }
-
-
-
-    /*public NotificacionService(SimpMessagingTemplate messagingTemplate){
-        this.messagingTemplate = messagingTemplate;
-    }
-
-
-    @Autowired
-    private IUsuarioRepository usuRepo;
-
-    @Autowired
-    private IUsuarioLeidoService usuarioLeidoService;
-
-    @Autowired
-    @Lazy
-    private IUsuarioService usuarioService;
-
-
-    private SimpMessagingTemplate messagingTemplate;
-
-    @Override
-    public List<Notificacion> getAll() {
-        return notificacionRepo.findAll();
-    }
-
-    @Override
-    public Optional<Notificacion> findById(Long id) {
-        return notificacionRepo.findById(id);
+        notificacion.setListaDeusuariosLeidos(asociarEntidades.relacionar(notificacion.getListaDeusuariosLeidos(), repositoryFactory.generarRepositorio(NombreRepositorio.USUARIO_LEIDO.getRepoName())));
     }
 
 
     @Override
-    public String delete(Long id) {
-        notificacionRepo.deleteById(id);
-        return "Notificacion eliminada";
-    }
-
-    @Override
-    public void enviarNotificacion(String topic, String informacion) {
-
-        String mensaje = "{\"mensaje\":\"" + informacion + "\"}";
-
-        messagingTemplate.convertAndSend(topic, mensaje);
+    public void enviarNotificacion(String topic, String detalle) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        DetalleNotificacion detalleNotificacion = new DetalleNotificacion(detalle);
+        try {
+            String detalleJson = objectMapper.writeValueAsString(detalleNotificacion);
+            messagingTemplate.convertAndSend(topic, detalleJson);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void guardarNotificacionAdmin(Long idEvento, String informacion) {
         Notificacion notificacion = new Notificacion();
         List<UsuarioLeido> listaLeidos = new ArrayList<>();
-        notificacion.setUsuariosLeidos(listaLeidos);
+        notificacion.setListaDeusuariosLeidos(listaLeidos);
         notificacion. setIdRedireccionamiento(idEvento);
         notificacion.setLeida(false);
         notificacion.setInformacion(informacion);
@@ -105,7 +98,7 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
         List<Usuario> nuevaListaUsu = new ArrayList<>();
         if(notificacion != null){
             for (Usuario usuario : notificacion.getListaUsuarios()){
-                if(usuario.getIdUsuario() != idUsuario){
+                if(usuario.getId() != idUsuario){
                     nuevaListaUsu.add(usuario);
                 }
             }
@@ -124,10 +117,10 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
         for (Notificacion notificacion : listaNotificaciones) {
             boolean leidaPorUsuario = false;
 
-            if (notificacion.getUsuariosLeidos().isEmpty()) {
+            if (notificacion.getListaDeusuariosLeidos().isEmpty()) {
                 nuevaLista.add(notificacion);
             } else {
-                for (UsuarioLeido usuarioLeido : notificacion.getUsuariosLeidos()) {
+                for (UsuarioLeido usuarioLeido : notificacion.getListaDeusuariosLeidos()) {
                     if (userId.equals(usuarioLeido.getIdUsuario())) {
                         leidaPorUsuario = true;
                         break;
@@ -141,21 +134,21 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
         return nuevaLista;
     }
 
-
+    @Override
     public String setNotificacionLeidaPorUsuario(Long userId) {
         List<Notificacion> listaNotificaciones = notificacionRepo.findNotificacionesByUsuarioId(userId);
         List<UsuarioLeido> listaUsuariosLeidos = new ArrayList<>();
 
         for (Notificacion notificacion : listaNotificaciones) {
 
-            for (UsuarioLeido usuarioLeido : notificacion.getUsuariosLeidos()){
+            for (UsuarioLeido usuarioLeido : notificacion.getListaDeusuariosLeidos()){
                 if (!usuarioLeido.getIdUsuario().equals(userId)) {
                     UsuarioLeido nuevoUsuarioLeido = new UsuarioLeido();
                     nuevoUsuarioLeido.setIdUsuario(userId);
                     listaUsuariosLeidos.add(nuevoUsuarioLeido);
                 }
             }
-            notificacion.setUsuariosLeidos(listaUsuariosLeidos);
+            notificacion.setListaDeusuariosLeidos(listaUsuariosLeidos);
             this.update(notificacion);
         }
         return "Notificaciones vistas";
@@ -170,22 +163,17 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
             UsuarioLeido  usuarioLeido = new UsuarioLeido();
             usuarioLeido.setIdUsuario(userId);
 
-            notificacion.getUsuariosLeidos().add(usuarioLeidoService.save(usuarioLeido));
+            notificacion.getListaDeusuariosLeidos().add(usuarioLeidoRepository.save(usuarioLeido));
             this.update(notificacion);
         }
         return "Notificaciones visualizadas";
     }
 
-    @Override
-    public void procersarLista(Notificacion notificacion) {
-        notificacion.setListaUsuarios(ProcesarLista.procesarLista(notificacion.getListaUsuarios(), usuarioService));
-        notificacion.setUsuariosLeidos(ProcesarLista.procesarLista(notificacion.getUsuariosLeidos(), usuarioLeidoService));
-    }
 
     @Override
     public List<Notificacion> findByLeidaFalse(Long usuarioId) {
         return notificacionRepo.findByLeidaFalse(usuarioId);
     }
 
-     */
+
 }

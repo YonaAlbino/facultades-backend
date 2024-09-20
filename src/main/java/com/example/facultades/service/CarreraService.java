@@ -1,14 +1,27 @@
 package com.example.facultades.service;
 
+import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
+import com.example.facultades.enums.Socket;
+import com.example.facultades.generics.BaseEntity;
 import com.example.facultades.generics.GenericService;
+import com.example.facultades.generics.IGenericRepository;
+import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Carrera;
+import com.example.facultades.model.Comentario;
 import com.example.facultades.repository.ICarreraRepository;
 import com.example.facultades.util.IAsociarEntidades;
+import com.example.facultades.util.IComentable;
 import com.example.facultades.util.IEntidadAsociable;
 import com.example.facultades.util.IRepositoryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CarreraService extends GenericService<Carrera, Long> implements ICarreraService, IEntidadAsociable<Carrera> {
@@ -22,15 +35,41 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
     @Autowired
     private IRepositoryFactory repositoryFactory;
 
+    @Autowired
+    private INotificacionService notificacionService;
+
     @Override
     public Carrera save(Carrera carrera) {
         this.asociar(carrera);
-        return carreraRepository.save(carrera);
+        Carrera carreraGuardada =  carreraRepository.save(carrera);
+        if(carreraGuardada.getId() != null){
+            notificacionService.enviarNotificacion(Socket.ADMIN_PREFIJO.getRuta(), MensajeNotificacionAdmin.CREACION_CARRERA.getNotificacion());
+            notificacionService.guardarNotificacionAdmin(carreraGuardada.getId(), MensajeNotificacionAdmin.CREACION_CARRERA.getNotificacion());
+            return carreraGuardada;
+        }
+        //Manejar error en caso no se guarde
+        return carreraGuardada;
     }
 
     @Override
     public Carrera update(Carrera carrera) {
-       return this.save(carrera);
+        if (verificarInsercionNuevoComentario(carrera, this, carrera.getComentarios()))
+            System.out.println("tiene mas comentarios");
+        else
+            System.out.println("No tiene mas comentarios");
+        this.asociar(carrera);
+        return carreraRepository.save(carrera);
+    }
+
+    public <E extends BaseEntity & IComentable> Boolean verificarInsercionNuevoComentario(E entidad, IgenericService<E,Long> servicio, List<Comentario> listaComentarios){
+        Optional<E> entidadGuardada =  servicio.findById(entidad.getId());
+        //IComentable iComentable = (IComentable) entidadGuardada.get();
+        List<Comentario> listaOriginal= entidadGuardada.get().getComentarios();
+
+        if(listaComentarios.size() > listaOriginal.size())
+            return true;
+        else
+            return false;
     }
 
 
@@ -39,28 +78,6 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
         carrera.setListaComentarios(asociarEntidades.relacionar(carrera.getListaComentarios(), repositoryFactory.generarRepositorio(NombreRepositorio.COMENTARIO.getRepoName())));
         carrera.setListaCalificacion(asociarEntidades.relacionar(carrera.getListaCalificacion(), repositoryFactory.generarRepositorio(NombreRepositorio.CALIFICACION.getRepoName())));
     }
-
-
-   /* @Override
-    public List<Carrera> getAll() {
-        List<Carrera> listaCarrera = carreraRepository.findAll();
-        return  listaCarrera;
-    }
-
-
-    @Override
-    public String delete(Long id) {
-        carreraRepository.deleteById(id);
-        return "Carrera eliminada con exito";
-    }
-
-    @Override
-    public Optional<Carrera> findById(Long id) {
-        Optional<Carrera> carreraOptional = carreraRepository.findById(id);
-        return carreraOptional;
-    }
-
-
 
     @Override
     public Page<Carrera> obtenerCarrerasPaginadas(Pageable pageable) {
@@ -74,18 +91,5 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
         return carreras;
     }
 
-    @Override
-    public void procesarLista(Carrera carrera) {
-        carrera.setListaCalificacion(ProcesarLista.procesarLista(carrera.getListaCalificacion(), calificacionService));
-        carrera.setListaComentarios(ProcesarLista.procesarLista(carrera.getListaComentarios(), comentarioService));
-    }
 
-
-    //@Override
-    //public String eliminarAsociacionUiversidadCarrera(Long id) {
-      //  carreraRepository.eliminarAsociacionUniversidadCarrera(id);
-       // return "La asociación entre la carrera con el id " + id + " se ha eliminado con exito" ;
-    //}
-
-    */
 }

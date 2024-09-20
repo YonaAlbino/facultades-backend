@@ -1,6 +1,8 @@
 package com.example.facultades.service;
 
+import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
+import com.example.facultades.enums.Socket;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.model.Rol;
 import com.example.facultades.model.Usuario;
@@ -33,6 +35,8 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private INotificacionService notificacionService;
 
     @Autowired
     @Lazy
@@ -83,12 +87,20 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     @Override
     public Usuario save(Usuario usuario) {
         this.asociar(usuario);
-        return this.usuarioRepo.save(usuario);
+        Usuario usuarioGuardado = usuarioRepo.save(usuario);
+        if(usuarioGuardado.getId() != null){
+            notificacionService.enviarNotificacion(Socket.ADMIN_PREFIJO.getRuta(), MensajeNotificacionAdmin.CREACION_USUARIO.getNotificacion());
+            notificacionService.guardarNotificacionAdmin(usuarioGuardado.getId(), MensajeNotificacionAdmin.CREACION_USUARIO.getNotificacion());
+            return usuarioGuardado;
+        }
+        //Manejar caso de que el usuario no se haya guardado
+        return usuarioGuardado;
     }
 
     @Override
     public Usuario update(Usuario usuario) {
-        return this.save(usuario);
+        this.asociar(usuario);
+        return this.usuarioRepo.save(usuario);
     }
 
     @Override

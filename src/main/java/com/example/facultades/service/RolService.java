@@ -21,7 +21,6 @@ public class RolService extends GenericService<Rol, Long> implements IRolService
     @Autowired
     private IRepositoryFactory repositoryFactory;
 
-
     @Override
     public Rol update(Rol rol) {
         return this.save(rol);

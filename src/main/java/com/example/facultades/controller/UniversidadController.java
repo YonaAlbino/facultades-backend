@@ -21,41 +21,8 @@ import java.util.Optional;
 @RequestMapping("/universidad")
 public class UniversidadController extends ControllerGeneric<Universidad, Long> {
 
-    /*@Autowired
+    @Autowired
     private IUniversidadService universidadService;
-
-    @GetMapping()
-    public ResponseEntity<List<Universidad>> getUniversidades(){
-        List<Universidad> listaUniversidades = universidadService.getAll();
-        return new ResponseEntity<>(listaUniversidades, HttpStatus.OK);
-    }
-
-    @GetMapping("/buscar/{id}")
-    public ResponseEntity<Universidad> findUniversidad(@PathVariable Long id){
-        Optional<Universidad> universidad = universidadService.findById(id);
-        if (universidad.isPresent()) {
-            return new ResponseEntity<>(universidad.get(), HttpStatus.OK);
-        }
-        return  new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-    }
-
-    @PostMapping()
-    public ResponseEntity<Universidad> saveUniversidad(@RequestBody Universidad universidad) throws RegistroExistenteException {
-        universidadService.procesarLista(universidad);
-        return ResponseEntity.ok(universidadService.save(universidad));
-    }
-
-    @PutMapping()
-    public ResponseEntity<Universidad> editUniversidad(@RequestBody Universidad universidad) throws  RegistroExistenteException {
-        universidadService.procesarLista(universidad);
-        return ResponseEntity.ok(universidadService.update(universidad));
-    }
-
-    @DeleteMapping()
-    public ResponseEntity<String> eliminarUniversidad(@RequestParam Long id){
-        String mensaje = universidadService.delete(id);
-        return new ResponseEntity<>(mensaje, HttpStatus.OK);
-    }
 
     @GetMapping("/obtenerTopUniversidades")
     public ResponseEntity<List<Universidad>> obtenerPrimerasTresImagenes(
@@ -89,6 +56,5 @@ public class UniversidadController extends ControllerGeneric<Universidad, Long> 
         return new ResponseEntity<>(ListaUniversidades, HttpStatus.OK);
     }
 
-     */
 
 }

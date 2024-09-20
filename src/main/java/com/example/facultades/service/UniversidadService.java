@@ -1,6 +1,8 @@
 package com.example.facultades.service;
 
+import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
+import com.example.facultades.enums.Socket;
 import com.example.facultades.excepciones.RegistroExistenteException;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.model.Universidad;
@@ -26,17 +28,26 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
     @Autowired
     private IRepositoryFactory repositoryFactory;
 
+    @Autowired
+    private INotificacionService notificacionService;
 
     @Override
     public Universidad update(Universidad universidad) {
-        return this.save(universidad);
+        this.asociar(universidad);
+        return universidadRepository.save(universidad);
     }
-
 
     @Override
     public Universidad save(Universidad universidad){
         this.asociar(universidad);
-        return universidadRepository.save(universidad);
+        Universidad universidadGuardada = universidadRepository.save(universidad);
+        if(universidadGuardada.getId() != null){
+            notificacionService.enviarNotificacion(Socket.ADMIN_PREFIJO.getRuta(), MensajeNotificacionAdmin.CREACION_UNIVERSIDAD.getNotificacion());
+            notificacionService.guardarNotificacionAdmin(universidadGuardada.getId(), MensajeNotificacionAdmin.CREACION_UNIVERSIDAD.getNotificacion());
+            return universidadGuardada;
+        }
+        //manejar error en caso de no guarda la uni
+        return universidadGuardada;
     }
 
     public boolean universidadExistente(String nombreUniversidad) throws RegistroExistenteException {

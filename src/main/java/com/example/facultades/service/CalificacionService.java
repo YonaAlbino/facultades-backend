@@ -12,37 +12,6 @@ import java.util.Optional;
 @Service
 public class CalificacionService extends GenericService<Calificacion, Long> implements ICalificacionService{
 
-   /* @Autowired
-    private ICalificacionRepository calificacionRepository;
 
-    @Override
-    public List<Calificacion> getAll() {
-        List<Calificacion> listaCalificaciones = calificacionRepository.findAll();
-        return listaCalificaciones;
-    }
-
-    @Override
-    public Calificacion save(Calificacion calificacion) {
-        calificacionRepository.save(calificacion);
-        return calificacion;
-    }
-
-    @Override
-    public String delete(Long id) {
-        calificacionRepository.deleteById(id);
-        return "Calificación elimanada con exito";
-    }
-
-    @Override
-    public Optional<Calificacion> findById(Long id) {
-        Optional<Calificacion> calificationOptional = calificacionRepository.findById(id);
-        return calificationOptional;
-    }
-
-    @Override
-    public Calificacion update(Calificacion calificacion) {
-        this.save(calificacion);
-        return calificacion;
-    }*/
 
 }

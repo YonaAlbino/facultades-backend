@@ -2,13 +2,19 @@ package com.example.facultades.controller;
 
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.model.Notificacion;
+import com.example.facultades.repository.INotificacionRepository;
+import com.example.facultades.service.INotificacionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/notificacion")
 public class NotificacionController extends ControllerGeneric<Notificacion, Long> {
 
-   /* @Autowired
+    @Autowired
     private INotificacionService notificacionService;
 
     @Autowired
@@ -44,20 +50,10 @@ public class NotificacionController extends ControllerGeneric<Notificacion, Long
         return ResponseEntity.ok(mensaje);
     }
 
-    @PostMapping
-    public ResponseEntity<Notificacion> save(@RequestBody Notificacion notificacion){
-        notificacionService.procersarLista(notificacion);
-        return ResponseEntity.ok(notificacionService.save(notificacion));
-    }
 
-    @GetMapping("/{idUser}")
+    @GetMapping("/byUserId/{idUser}")
     public ResponseEntity<List<Notificacion>> getNotificacionByIdUser(@PathVariable Long idUser){
         return ResponseEntity.ok(notificacionService.getNotificacionByIdUser(idUser));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Notificacion>> getNotificaciones(){
-        return ResponseEntity.ok(notificacionService.getAll());
     }
 
     @PutMapping("/{idNotificacion}/{idUsuario}")
@@ -67,5 +63,4 @@ public class NotificacionController extends ControllerGeneric<Notificacion, Long
        return ResponseEntity.ok(mensaje);
     }
 
-    */
 }

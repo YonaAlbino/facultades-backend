@@ -8,7 +8,11 @@ import com.example.facultades.util.IAsociarEntidades;
 import com.example.facultades.util.IEntidadAsociable;
 import com.example.facultades.util.IRepositoryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ComentarioService extends GenericService<Comentario, Long> implements IComentarioService, IEntidadAsociable<Comentario> {
@@ -21,6 +25,7 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
 
     @Autowired
     private IRepositoryFactory repositoryFactory;
+
 
     @Override
     public Comentario save(Comentario comentario) {
@@ -39,37 +44,6 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
         comentario.setListaRespuesta(asociarEntidades.relacionar(comentario.getListaRespuesta(), repositoryFactory.generarRepositorio(NombreRepositorio.RESPUESTA.getRepoName())));
     }
 
-    /*@Autowired
-    private IComentarioRepository comentarioRepository;
-
-    @Autowired
-    private IRespuestaService respuestaService;
-
-    @Autowired
-    private IReaccionService reaccionService;
-
-    @Override
-    public List<Comentario> getAll() {
-        List<Comentario> listaComentario = comentarioRepository.findAll();
-        return listaComentario;
-    }
-
-
-
-    @Override
-    public String delete(Long id) {
-        comentarioRepository.deleteById(id);
-        return "Comentario eliminado con exito";
-    }
-
-    @Override
-    public Optional<Comentario> findById(Long id) {
-        Optional<Comentario> comentarioOptional = comentarioRepository.findById(id);
-        return comentarioOptional;
-    }
-
-
-
     @Override
     public List<Comentario> findComentariosByUniversidadId(Long idUniversidad, int cantidadRegistros, int pagina) {
         Pageable pageable = PageRequest.of(cantidadRegistros, pagina);
@@ -84,12 +58,5 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
         return listaComentarios;
     }
 
-    @Override
-    public void procesarLista(Comentario comentario) {
-        comentario.setListaRespuesta(ProcesarLista.procesarLista(comentario.getListaRespuesta(), respuestaService));
-        comentario.setListaReaccion(ProcesarLista.procesarLista(comentario.getListaReaccion(),reaccionService));
-    }
-
-     */
 
 }

@@ -2,46 +2,20 @@ package com.example.facultades.controller;
 
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.model.Comentario;
+import com.example.facultades.service.IComentarioService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/comentario")
 public class ComentarioController extends ControllerGeneric<Comentario, Long> {
 
-    /*@Autowired
+    @Autowired
     private IComentarioService comentarioService;
-
-    @GetMapping()
-    public ResponseEntity<List<Comentario>> getComentarios(@RequestBody Comentario comentario){
-        List<Comentario> listaComentarios = comentarioService.getAll();
-        return new ResponseEntity<>(listaComentarios, HttpStatus.OK);
-    }
-
-    @GetMapping("/buscar/{id}")
-    public ResponseEntity<Comentario> findComentario(@PathVariable long id){
-        Optional<Comentario> comentario = comentarioService.findById(id);
-        if(comentario.isPresent())
-            return new ResponseEntity<>(comentario.get(), HttpStatus.OK);
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-    }
-
-    @PostMapping()
-    public ResponseEntity<Comentario> saveComentario(@RequestBody Comentario comentario){
-    comentarioService.procesarLista(comentario);
-      return ResponseEntity.ok(comentarioService.save(comentario));
-    }
-
-    @PutMapping()
-    public ResponseEntity<Comentario> editComentario(@RequestBody Comentario comentario){
-        comentarioService.procesarLista(comentario);
-        return ResponseEntity.ok(comentarioService.update(comentario));
-    }
-
-    @DeleteMapping()
-    public ResponseEntity<String> deleteComentario(@PathVariable Long id){
-       String mensaje = comentarioService.delete(id);
-        return new ResponseEntity<>(mensaje, HttpStatus.OK);
-    }
 
     @GetMapping("/encontrarComentariosPorIdUniversidad/{idUniversidad}")
     public ResponseEntity<List<Comentario>> encontrarComentariosPorIdUniversidad(
@@ -61,5 +35,4 @@ public class ComentarioController extends ControllerGeneric<Comentario, Long> {
         return new ResponseEntity<>(listaComentarios, HttpStatus.OK);
     }
 
-     */
 }

@@ -1,6 +1,7 @@
 package com.example.facultades.model;
 
 import com.example.facultades.generics.BaseEntity;
+import com.example.facultades.util.IComentable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Carrera extends BaseEntity{
+public class Carrera extends BaseEntity implements IComentable {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;*/
@@ -30,4 +31,8 @@ public class Carrera extends BaseEntity{
     private List<Calificacion> listaCalificacion;
 
 
+    @Override
+    public List<Comentario> getComentarios() {
+        return listaComentarios;
+    }
 }
