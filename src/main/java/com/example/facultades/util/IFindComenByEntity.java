@@ -4,6 +4,6 @@ import com.example.facultades.model.Comentario;
 
 import java.util.List;
 
-public interface IComentable {
-    public List<Comentario> getComentarios();
+public interface IFindComenByEntity {
+    List<Comentario> getAllComenByEntity(Long id);
 }

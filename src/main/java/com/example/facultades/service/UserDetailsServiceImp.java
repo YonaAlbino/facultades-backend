@@ -2,13 +2,17 @@ package com.example.facultades.service;
 
 import com.example.facultades.dto.AuthLoguinRequestDTO;
 import com.example.facultades.dto.AuthLoguinResponseDTO;
+import com.example.facultades.enums.DuracionToken;
 import com.example.facultades.util.JwtUtil;
 import com.example.facultades.model.Usuario;
 import com.example.facultades.repository.IUsuarioRepository;
+import com.example.facultades.util.Utili;
+import jdk.jshell.execution.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -20,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserDetailsServiceImp implements UserDetailsService {
@@ -32,6 +37,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -87,8 +93,12 @@ public class UserDetailsServiceImp implements UserDetailsService {
         Authentication authentication = this.authenticate(username, password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String token = jwtUtil.createToken(authentication);
-        AuthLoguinResponseDTO authLoguinResponseDTO = new AuthLoguinResponseDTO(username,"Loguin correcto", token, true);
+        Usuario usuario = usuarioRepo.findUserEntityByusername(username).get();
+        String role = Utili.obtenerRol(authentication);
+
+        String accesToken = jwtUtil.createToken(authentication, DuracionToken.ACCES_TOKEN.getDuracion());
+        String refreshToekn = jwtUtil.createToken(authentication, DuracionToken.REFRESH_TOKEN.getDuracion());
+        AuthLoguinResponseDTO authLoguinResponseDTO = new AuthLoguinResponseDTO(username, role, usuario.getId(),"Loguin correcto", accesToken, refreshToekn, true);
         return authLoguinResponseDTO;
     }
 

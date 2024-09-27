@@ -13,7 +13,7 @@ public class webSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry){
-        registry.enableSimpleBroker(Socket.BROKER.getRuta());
+        registry.enableSimpleBroker(Socket.TOPICO_PRINCIPAL.getRuta(), Socket.TOPICO_PERSONAL.getRuta());
     }
 
     @Override

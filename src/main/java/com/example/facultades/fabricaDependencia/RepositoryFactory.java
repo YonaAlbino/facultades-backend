@@ -1,8 +1,9 @@
-package com.example.facultades.util;
+package com.example.facultades.fabricaDependencia;
 
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.generics.IGenericRepository;
 import com.example.facultades.repository.*;
+import com.example.facultades.util.IRepositoryFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;

@@ -10,6 +10,7 @@ import com.example.facultades.util.IRepositoryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
     @Autowired
     private IRepositoryFactory repositoryFactory;
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public Comentario save(Comentario comentario) {
         this.asociar(comentario);
@@ -41,7 +42,7 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
     @Override
     public void asociar(Comentario comentario) {
         comentario.setListaReaccion(asociarEntidades.relacionar(comentario.getListaReaccion(), repositoryFactory.generarRepositorio(NombreRepositorio.REACCION.getRepoName())));
-        comentario.setListaRespuesta(asociarEntidades.relacionar(comentario.getListaRespuesta(), repositoryFactory.generarRepositorio(NombreRepositorio.RESPUESTA.getRepoName())));
+        //comentario.setListaRespuesta(asociarEntidades.relacionar(comentario.getListaRespuesta(), repositoryFactory.generarRepositorio(NombreRepositorio.RESPUESTA.getRepoName())));
     }
 
     @Override
@@ -57,6 +58,8 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
         List<Comentario> listaComentarios = comentarioRepository.findComentariosByCarreraId(idCarrera, pageable);
         return listaComentarios;
     }
+
+
 
 
 }

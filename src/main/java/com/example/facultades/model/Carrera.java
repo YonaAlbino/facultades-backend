@@ -1,7 +1,8 @@
 package com.example.facultades.model;
 
 import com.example.facultades.generics.BaseEntity;
-import com.example.facultades.util.IComentable;
+import com.example.facultades.util.INotificable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Carrera extends BaseEntity implements IComentable {
+public class Carrera extends BaseEntity implements INotificable<Carrera> {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;*/
@@ -30,9 +31,9 @@ public class Carrera extends BaseEntity implements IComentable {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Calificacion> listaCalificacion;
 
-
     @Override
-    public List<Comentario> getComentarios() {
-        return listaComentarios;
+    @JsonIgnore
+    public String getDetalleEvento() {
+        return getNombre();
     }
 }

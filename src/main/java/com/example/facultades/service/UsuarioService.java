@@ -68,7 +68,6 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         return this.save(usuario);
     }
 
-
     @Override
     public Optional<Usuario> findUserEntityByusername(String username) {
         //IUsuarioRepository IUsuarioRepository = (IUsuarioRepository) repositoryFactory.generarRepositorio(NombreRepositorio.USUARIO.getRepoName());
@@ -87,10 +86,10 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     @Override
     public Usuario save(Usuario usuario) {
         this.asociar(usuario);
+        usuario.setPassword(this.encriptPassword(usuario.getPassword()));
         Usuario usuarioGuardado = usuarioRepo.save(usuario);
         if(usuarioGuardado.getId() != null){
-            notificacionService.enviarNotificacion(Socket.ADMIN_PREFIJO.getRuta(), MensajeNotificacionAdmin.CREACION_USUARIO.getNotificacion());
-            notificacionService.guardarNotificacionAdmin(usuarioGuardado.getId(), MensajeNotificacionAdmin.CREACION_USUARIO.getNotificacion());
+            Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_USUARIO.getNotificacion(), usuarioGuardado, notificacionService);
             return usuarioGuardado;
         }
         //Manejar caso de que el usuario no se haya guardado
@@ -107,7 +106,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     public void asociar(Usuario usuario) {
         usuario.setListaRoles(asociarEntidades.relacionar(usuario.getListaRoles(),repositoryFactory.generarRepositorio(NombreRepositorio.ROL.getRepoName())));
         usuario.setListaCalificacion(asociarEntidades.relacionar(usuario.getListaCalificacion(),repositoryFactory.generarRepositorio(NombreRepositorio.CALIFICACION.getRepoName())));
-        usuario.setListaRespuesta(asociarEntidades.relacionar(usuario.getListaRespuesta(), repositoryFactory.generarRepositorio(NombreRepositorio.RESPUESTA.getRepoName())));
+       // usuario.setListaRespuesta(asociarEntidades.relacionar(usuario.getListaRespuesta(), repositoryFactory.generarRepositorio(NombreRepositorio.RESPUESTA.getRepoName())));
         usuario.setListaReaccion(asociarEntidades.relacionar(usuario.getListaReaccion(),repositoryFactory.generarRepositorio(NombreRepositorio.REACCION.getRepoName())));
         usuario.setListaComentarios(asociarEntidades.relacionar(usuario.getListaComentarios(),repositoryFactory.generarRepositorio(NombreRepositorio.COMENTARIO.getRepoName())));
         usuario.setListaUniversidad(asociarEntidades.relacionar(usuario.getListaUniversidad(), repositoryFactory.generarRepositorio(NombreRepositorio.UNIVERSIDAD.getRepoName())));

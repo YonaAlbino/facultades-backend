@@ -1,6 +1,7 @@
 package com.example.facultades.controller;
 
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.facultades.excepciones.*;
 import com.example.facultades.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -65,4 +66,8 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
+
+
+
+
 }

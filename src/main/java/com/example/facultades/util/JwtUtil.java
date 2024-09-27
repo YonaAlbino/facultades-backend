@@ -24,7 +24,7 @@ public class JwtUtil {
     @Value("${USER_GENERATOR}")
     private String userGenerator;
 
-    public String createToken(Authentication authentication){
+    public String createToken(Authentication authentication, long milisegundos){
         Algorithm algorithm = Algorithm.HMAC256(privateKey);
         String username = authentication.getPrincipal().toString();
 
@@ -33,12 +33,37 @@ public class JwtUtil {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
+        System.out.println(new Date(System.currentTimeMillis() + (milisegundos)));
+
         String jwtToken = JWT.create()
                 .withIssuer(this.userGenerator)
                 .withSubject(username)
                 .withClaim("authorities", authorities)
                 .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000)))
+                .withExpiresAt(new Date(System.currentTimeMillis() + (milisegundos)))
+                .withJWTId(UUID.randomUUID().toString())
+                .withNotBefore(new Date(System.currentTimeMillis()))
+                .sign(algorithm);
+        return jwtToken;
+    }
+
+    public String createToken(String username, String authorities, long milisegundos){
+        Algorithm algorithm = Algorithm.HMAC256(privateKey);
+        // username = authentication.getPrincipal().toString();
+
+        /*String authorities = authentication.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));*/
+
+        System.out.println(new Date(System.currentTimeMillis() + (milisegundos)));
+
+        String jwtToken = JWT.create()
+                .withIssuer(this.userGenerator)
+                .withSubject(username)
+                .withClaim("authorities", authorities)
+                .withIssuedAt(new Date())
+                .withExpiresAt(new Date(System.currentTimeMillis() + (milisegundos)))
                 .withJWTId(UUID.randomUUID().toString())
                 .withNotBefore(new Date(System.currentTimeMillis()))
                 .sign(algorithm);

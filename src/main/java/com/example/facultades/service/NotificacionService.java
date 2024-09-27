@@ -22,6 +22,7 @@ import java.util.Objects;
 
 @Service
 public class NotificacionService extends GenericService<Notificacion, Long> implements INotificacionService, IEntidadAsociable<Notificacion> {
+
     @Autowired
     private INotificacionRepository notificacionRepo;
 
@@ -43,7 +44,6 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
 
     private SimpMessagingTemplate messagingTemplate;
 
-
     @Override
     public Notificacion save(Notificacion notificacion) {
         this.asociar(notificacion);
@@ -64,9 +64,9 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
 
 
     @Override
-    public void enviarNotificacion(String topic, String detalle) {
+    public void enviarNotificacionByWebSocket(String topic,DetalleNotificacion detalleNotificacion) {
         ObjectMapper objectMapper = new ObjectMapper();
-        DetalleNotificacion detalleNotificacion = new DetalleNotificacion(detalle);
+       // DetalleNotificacion detalleNotificacion = new DetalleNotificacion(evento, detalle, id);
         try {
             String detalleJson = objectMapper.writeValueAsString(detalleNotificacion);
             messagingTemplate.convertAndSend(topic, detalleJson);
@@ -74,6 +74,7 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
             throw new RuntimeException(e);
         }
     }
+
 
     @Override
     public void guardarNotificacionAdmin(Long idEvento, String informacion) {
@@ -174,6 +175,5 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
     public List<Notificacion> findByLeidaFalse(Long usuarioId) {
         return notificacionRepo.findByLeidaFalse(usuarioId);
     }
-
 
 }

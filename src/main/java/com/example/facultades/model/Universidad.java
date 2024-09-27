@@ -1,6 +1,8 @@
 package com.example.facultades.model;
 
 import com.example.facultades.generics.BaseEntity;
+import com.example.facultades.util.INotificable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +16,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Universidad extends BaseEntity  {
+public class Universidad extends BaseEntity implements INotificable<Universidad> {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;*/
@@ -26,14 +28,18 @@ public class Universidad extends BaseEntity  {
     private String descripcion;
     private String direccionWeb;
 
-
     @OneToMany(cascade = CascadeType.ALL)
     private List<Carrera> listaCarreras;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Calificacion> listaCalificacion;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType. ALL)
     private List<Comentario> listaComentarios;
 
+    @Override
+    @JsonIgnore
+    public String getDetalleEvento() {
+        return getNombre();
+    }
 }

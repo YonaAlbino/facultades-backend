@@ -1,10 +1,13 @@
 package com.example.facultades.service;
 
+import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.enums.Socket;
 import com.example.facultades.excepciones.RegistroExistenteException;
 import com.example.facultades.generics.GenericService;
+import com.example.facultades.generics.IgenericService;
+import com.example.facultades.model.Comentario;
 import com.example.facultades.model.Universidad;
 import com.example.facultades.repository.IUniversidadRepository;
 import com.example.facultades.util.*;
@@ -31,8 +34,14 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
     @Autowired
     private INotificacionService notificacionService;
 
+    @Autowired
+    private IgenericService<Comentario, Long> comentarioService;
+
     @Override
     public Universidad update(Universidad universidad) {
+        if (Utili.verificarInsercionNuevoComentario(universidad, universidadRepository, universidad.getListaComentarios())) {
+            Utili.enviarGuardarNotificacionNuevoComentario(universidad.getListaComentarios(), comentarioService, notificacionService);
+        }
         this.asociar(universidad);
         return universidadRepository.save(universidad);
     }
@@ -42,8 +51,7 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
         this.asociar(universidad);
         Universidad universidadGuardada = universidadRepository.save(universidad);
         if(universidadGuardada.getId() != null){
-            notificacionService.enviarNotificacion(Socket.ADMIN_PREFIJO.getRuta(), MensajeNotificacionAdmin.CREACION_UNIVERSIDAD.getNotificacion());
-            notificacionService.guardarNotificacionAdmin(universidadGuardada.getId(), MensajeNotificacionAdmin.CREACION_UNIVERSIDAD.getNotificacion());
+            Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_UNIVERSIDAD.getNotificacion(), universidadGuardada, notificacionService);
             return universidadGuardada;
         }
         //manejar error en caso de no guarda la uni
@@ -52,7 +60,6 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
 
     public boolean universidadExistente(String nombreUniversidad) throws RegistroExistenteException {
         String nombre = universidadRepository.buscarUniversidadPorNombre(nombreUniversidad);
-        System.out.println(nombre);
         if(nombre == null)
             return false;
         throw new RegistroExistenteException("La universidad que desas ingresar ya existe");
@@ -83,10 +90,9 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
         return ListaUniversidades;
     }
 
-
     @Override
     public void asociar(Universidad universidad) {
-        universidad.setListaCalificacion(asociarEntidades.relacionar(universidad.getListaCalificacion(), repositoryFactory.generarRepositorio(NombreRepositorio.CALIFICACION.getRepoName())));
+        universidad.setListaComentarios(asociarEntidades.relacionar(universidad.getListaComentarios(), repositoryFactory.generarRepositorio(NombreRepositorio.COMENTARIO.getRepoName())));
         universidad.setListaCarreras(asociarEntidades.relacionar(universidad.getListaCarreras(), repositoryFactory.generarRepositorio(NombreRepositorio.CARRERA.getRepoName())));
         universidad.setListaCalificacion(asociarEntidades.relacionar(universidad.getListaCalificacion(), repositoryFactory.generarRepositorio(NombreRepositorio.CALIFICACION.getRepoName())));
     }

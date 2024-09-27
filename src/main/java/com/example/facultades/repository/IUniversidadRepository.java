@@ -1,8 +1,10 @@
 package com.example.facultades.repository;
 
 import com.example.facultades.generics.IGenericRepository;
+import com.example.facultades.model.Comentario;
 import com.example.facultades.model.Reaccion;
 import com.example.facultades.model.Universidad;
+import com.example.facultades.util.IFindComenByEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +14,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface IUniversidadRepository extends IGenericRepository<Universidad, Long> {
+public interface IUniversidadRepository extends IGenericRepository<Universidad, Long>, IFindComenByEntity {
+
     @Query(value = "Select nombre FROM universidad WHERE nombre = :nombreUniversidad", nativeQuery = true)
     String buscarUniversidadPorNombre(String nombreUniversidad);
 
@@ -38,7 +41,17 @@ public interface IUniversidadRepository extends IGenericRepository<Universidad, 
             "WHERE u.nombre LIKE %:nombreUniversidad%")
     List<Universidad> getUniversidadByName(String nombreUniversidad);
 
-
+    @Override
+    @Query("SELECT c " +
+            "FROM Comentario c " +
+            "WHERE c.id IN (" +
+            "    SELECT uc.id " +
+            "    FROM Universidad u " +
+            "    JOIN u.listaComentarios uc " +
+            "    WHERE u.id = :universidadId" +
+            ") " +
+            "ORDER BY c.fecha DESC") // Ordenar por fecha descendente
+    List<Comentario> getAllComenByEntity(Long universidadId);
 
 
 

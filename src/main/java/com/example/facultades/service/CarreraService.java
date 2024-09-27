@@ -1,19 +1,17 @@
 package com.example.facultades.service;
 
+import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.enums.Socket;
 import com.example.facultades.generics.BaseEntity;
 import com.example.facultades.generics.GenericService;
-import com.example.facultades.generics.IGenericRepository;
 import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Carrera;
 import com.example.facultades.model.Comentario;
+import com.example.facultades.model.Universidad;
 import com.example.facultades.repository.ICarreraRepository;
-import com.example.facultades.util.IAsociarEntidades;
-import com.example.facultades.util.IComentable;
-import com.example.facultades.util.IEntidadAsociable;
-import com.example.facultades.util.IRepositoryFactory;
+import com.example.facultades.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CarreraService extends GenericService<Carrera, Long> implements ICarreraService, IEntidadAsociable<Carrera> {
@@ -38,38 +35,30 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
     @Autowired
     private INotificacionService notificacionService;
 
+    @Autowired
+    private IgenericService<Comentario,Long> comentarioService;
+
     @Override
     public Carrera save(Carrera carrera) {
         this.asociar(carrera);
         Carrera carreraGuardada =  carreraRepository.save(carrera);
         if(carreraGuardada.getId() != null){
-            notificacionService.enviarNotificacion(Socket.ADMIN_PREFIJO.getRuta(), MensajeNotificacionAdmin.CREACION_CARRERA.getNotificacion());
-            notificacionService.guardarNotificacionAdmin(carreraGuardada.getId(), MensajeNotificacionAdmin.CREACION_CARRERA.getNotificacion());
+            Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_CARRERA.getNotificacion(), carreraGuardada, notificacionService);
             return carreraGuardada;
         }
         //Manejar error en caso no se guarde
         return carreraGuardada;
     }
 
+
     @Override
     public Carrera update(Carrera carrera) {
-        if (verificarInsercionNuevoComentario(carrera, this, carrera.getComentarios()))
-            System.out.println("tiene mas comentarios");
+        if (Utili.verificarInsercionNuevoComentario(carrera, carreraRepository, carrera.getListaComentarios()))
+            Utili.enviarGuardarNotificacionNuevoComentario(carrera.getListaComentarios(), comentarioService, notificacionService);
         else
             System.out.println("No tiene mas comentarios");
         this.asociar(carrera);
         return carreraRepository.save(carrera);
-    }
-
-    public <E extends BaseEntity & IComentable> Boolean verificarInsercionNuevoComentario(E entidad, IgenericService<E,Long> servicio, List<Comentario> listaComentarios){
-        Optional<E> entidadGuardada =  servicio.findById(entidad.getId());
-        //IComentable iComentable = (IComentable) entidadGuardada.get();
-        List<Comentario> listaOriginal= entidadGuardada.get().getComentarios();
-
-        if(listaComentarios.size() > listaOriginal.size())
-            return true;
-        else
-            return false;
     }
 
 

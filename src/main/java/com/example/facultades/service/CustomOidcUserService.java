@@ -1,6 +1,7 @@
 package com.example.facultades.service;
 
 
+import com.example.facultades.enums.DuracionToken;
 import com.example.facultades.util.JwtUtil;
 import com.example.facultades.model.OidcUserPersonalizado;
 import com.example.facultades.model.Usuario;
@@ -34,6 +35,7 @@ public class CustomOidcUserService extends OidcUserService {
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         OidcUser oidcUser = super.loadUser(userRequest);
         String jwtToken;
+        String refreshToken;
         String email = oidcUser.getEmail();
         Authentication authentication = null;
         Long idUsuaruio;
@@ -49,7 +51,8 @@ public class CustomOidcUserService extends OidcUserService {
             authentication = userDetails.authenticate(usuario.get().getUsername());
             idUsuaruio = usuario.get().getId();
         }
-        jwtToken = jwtUtil.createToken(authentication);
+        jwtToken = jwtUtil.createToken(authentication, DuracionToken.ACCES_TOKEN.getDuracion());
+        refreshToken = jwtUtil.createToken(authentication, DuracionToken.REFRESH_TOKEN.getDuracion());
         //System.out.println(authentication.getAuthorities());
 
 
@@ -65,7 +68,7 @@ public class CustomOidcUserService extends OidcUserService {
         //System.out.println(oidcUser.getGivenName());
         //System.out.println(oidcUser.getFamilyName());
         //System.out.println(oidcUser.getPicture());
-        return new OidcUserPersonalizado(oidcUser, jwtToken, role, idUsuaruio);
+        return new OidcUserPersonalizado(oidcUser, jwtToken, refreshToken, role, idUsuaruio);
     }
 
 }

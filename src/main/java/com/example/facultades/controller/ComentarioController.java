@@ -1,11 +1,21 @@
 package com.example.facultades.controller;
 
+import com.example.facultades.dto.ComentarioDto;
+import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.model.Comentario;
+import com.example.facultades.model.Usuario;
+import com.example.facultades.repository.IUsuarioRepository;
 import com.example.facultades.service.IComentarioService;
+import com.example.facultades.service.INotificacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +26,16 @@ public class ComentarioController extends ControllerGeneric<Comentario, Long> {
 
     @Autowired
     private IComentarioService comentarioService;
+
+    @Autowired
+    private INotificacionService notificacionService;
+
+    @GetMapping("/enviarNotificacionUsuario")
+    public void enviarNotificacionUsuario(){
+        DetalleNotificacion detalleNotificacion = new DetalleNotificacion("prueba","prueba", 1L);
+        notificacionService.enviarNotificacionByWebSocket("/usuario/152",detalleNotificacion);
+    }
+
 
     @GetMapping("/encontrarComentariosPorIdUniversidad/{idUniversidad}")
     public ResponseEntity<List<Comentario>> encontrarComentariosPorIdUniversidad(
@@ -34,5 +54,6 @@ public class ComentarioController extends ControllerGeneric<Comentario, Long> {
         List<Comentario> listaComentarios = comentarioService.findComentariosByCarreraId(idCarrera, pagina, tamanio);
         return new ResponseEntity<>(listaComentarios, HttpStatus.OK);
     }
+
 
 }

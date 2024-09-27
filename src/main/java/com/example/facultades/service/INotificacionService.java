@@ -2,14 +2,13 @@ package com.example.facultades.service;
 
 
 
+import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.model.Notificacion;
-import com.example.facultades.model.Universidad;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface INotificacionService {
-    public void enviarNotificacion(String topic, String informacion);
+    public void enviarNotificacionByWebSocket(String topic,DetalleNotificacion detalleNotificacion);
     public void guardarNotificacionAdmin(Long idEvento, String informacion);
     public List<Notificacion> getNotificacionByIdUser(Long idUser);
     public String eliminarUsuarioNotificacion(Long idNotificacion, Long idUsuario);

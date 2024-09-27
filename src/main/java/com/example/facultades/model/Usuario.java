@@ -1,6 +1,11 @@
 package com.example.facultades.model;
 
 import com.example.facultades.generics.BaseEntity;
+import com.example.facultades.util.INotificable;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,9 +18,10 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Usuario extends BaseEntity {
+public class Usuario extends BaseEntity implements INotificable<Usuario> {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long idUsuario;*/
@@ -37,13 +43,19 @@ public class Usuario extends BaseEntity {
     @OneToMany()
     private List<Calificacion> listaCalificacion;
 
-    @OneToMany()
+    @OneToMany(mappedBy = "usuario")
+    //@JsonManagedReference
     private List<Comentario> listaComentarios;
 
-    @OneToMany()
-    private  List<Respuesta> listaRespuesta;
+    //@OneToMany()
+   // private  List<Respuesta> listaRespuesta;
 
     @OneToMany()
     private List<Reaccion> listaReaccion;
 
+    @Override
+    @JsonIgnore
+    public String getDetalleEvento() {
+        return getUsername();
+    }
 }

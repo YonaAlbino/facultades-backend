@@ -12,12 +12,14 @@ public class OidcUserPersonalizado implements OidcUser {
 
     private OidcUser OdiUserOriginal;
     private String tokenInterno;
+    private String refreshToken;
     private String role;
     private Long idUsuario;
 
-    public OidcUserPersonalizado(OidcUser odiUserOriginal, String tokenInterno, String role, Long idUsuario){
+    public OidcUserPersonalizado(OidcUser odiUserOriginal, String tokenInterno, String refreshToken, String role, Long idUsuario){
         this.OdiUserOriginal = odiUserOriginal;
         this.tokenInterno = tokenInterno;
+        this.refreshToken = refreshToken;
         this.role = role;
         this.idUsuario = idUsuario;
     }
@@ -54,6 +56,10 @@ public class OidcUserPersonalizado implements OidcUser {
 
     public String getTokenInterno(){
         return tokenInterno;
+    }
+
+    public String getRefreshToken(){
+        return refreshToken;
     }
 
     public String getRole(){

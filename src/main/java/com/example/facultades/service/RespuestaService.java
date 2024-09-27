@@ -33,8 +33,8 @@ public class RespuestaService extends GenericService<Respuesta, Long> implements
 
     @Override
     public void asociar(Respuesta respuesta) {
-        respuesta.setListaRespuesta(asociarEntidades.relacionar(respuesta.getListaRespuesta(), repositoryFactory.generarRepositorio(NombreRepositorio.RESPUESTA.getRepoName())));
-        respuesta.setListaReaccion(asociarEntidades.relacionar(respuesta.getListaReaccion(), repositoryFactory.generarRepositorio(NombreRepositorio.REACCION.getRepoName())));
+        //respuesta.setListaRespuesta(asociarEntidades.relacionar(respuesta.getListaRespuesta(), repositoryFactory.generarRepositorio(NombreRepositorio.RESPUESTA.getRepoName())));
+        //respuesta.setListaReaccion(asociarEntidades.relacionar(respuesta.getListaReaccion(), repositoryFactory.generarRepositorio(NombreRepositorio.REACCION.getRepoName())));
     }
 
 }
