@@ -1,7 +1,9 @@
 package com.example.facultades.service;
 
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.facultades.enums.DuracionToken;
+import com.example.facultades.model.RefreshToken;
 import com.example.facultades.util.JwtUtil;
 import com.example.facultades.model.OidcUserPersonalizado;
 import com.example.facultades.model.Usuario;
@@ -15,9 +17,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Optional;
-
 @Service
 public class CustomOidcUserService extends OidcUserService {
 
@@ -29,46 +28,120 @@ public class CustomOidcUserService extends OidcUserService {
     private UserDetailsServiceImp userDetails;
 
     @Autowired
+    private RefreshTokenService refreshTokenService;
+
+    @Autowired
     private JwtUtil jwtUtil;
+
+    /*@Override
+    public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
+        OidcUser oidcUser = super.loadUser(userRequest);
+        String userName = oidcUser.getEmail();
+
+        // Obtener o crear el usuario en la base de datos
+        Usuario usuario = usuarioUservice.findUserEntityByusername(userName)
+                .orElseGet(() -> usuarioUservice.saveUserOauth(userName));
+
+        // Autenticar al usuario
+        Authentication authentication = userDetails.authenticate(usuario.getUsername());
+        Long idUsuario = usuario.getId();
+
+        // Generar tokens
+        String jwtToken = jwtUtil.createToken(authentication, 60 * 2000);
+        String refreshToken = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());
+
+      try {
+          if(usuario.getRefreshToken() != null) {
+              jwtUtil.validateToken(usuario.getRefreshToken().getToken());
+          }
+      }catch (JWTVerificationException exception){
+          String nuevoRefreshToken = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());
+          actualizarRefreshToken(usuario.getRefreshToken(), nuevoRefreshToken);
+          System.out.println(exception.getMessage());
+      }
+
+        // Obtener el rol más adecuado utilizando Streams
+        String role = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(auth -> auth.equals("ROLE_ADMIN") || auth.equals("ROLE_USER") || auth.equals("ROLE_AUTOR"))
+                .findFirst() // Tomar el primer rol válido
+                .orElse("ROLE_USER"); // Valor predeterminado si no hay roles válidos
+
+        // Retornar el usuario OIDC personalizado con los tokens y roles
+        return new OidcUserPersonalizado(oidcUser, jwtToken, role, idUsuario);
+    }*/
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         OidcUser oidcUser = super.loadUser(userRequest);
-        String jwtToken;
-        String refreshToken;
-        String email = oidcUser.getEmail();
-        Authentication authentication = null;
-        Long idUsuaruio;
-        String role = "";
+        String userName = oidcUser.getEmail();
 
-        Optional<Usuario> usuario = usuarioUservice.findUserEntityByusername(email);
+        // Obtener o crear el usuario en la base de datos
+        Usuario usuario = usuarioUservice.findUserEntityByusername(userName)
+                .orElseGet(() -> usuarioUservice.saveUserOauth(userName));
 
-        if(usuario.isEmpty()){
-            Usuario nuevoUsuario = usuarioUservice.saveUserOauth(email);
-            authentication = userDetails.authenticate(nuevoUsuario.getUsername());
-            idUsuaruio = nuevoUsuario.getId();
-        }else{
-            authentication = userDetails.authenticate(usuario.get().getUsername());
-            idUsuaruio = usuario.get().getId();
+        // Autenticar al usuario
+        Authentication authentication = authenticateUser(usuario.getUsername());
+
+        // Generar tokens
+        String jwtToken = generateJwtToken(authentication);
+        String refreshToken = refreshToken(usuario);
+
+        // Obtener el rol más adecuado
+        String role = getRole(authentication);
+
+        // Retornar el usuario OIDC personalizado con los tokens y roles
+        return new OidcUserPersonalizado(oidcUser, jwtToken, role, usuario.getId());
+    }
+
+
+    // Método para autenticar al usuario
+    private Authentication authenticateUser(String username) {
+        return userDetails.authenticate(username);
+    }
+
+    // Método para generar JWT token
+    private String generateJwtToken(Authentication authentication) {
+        return jwtUtil.createToken(authentication, 2 * 60000);  // Tiempo ajustable según sea necesario
+    }
+
+    // Método para manejar el refresh token
+    private String refreshToken(Usuario usuario) {
+        String refreshToken = null;
+        if (usuario.getRefreshToken() != null) {
+            refreshToken = usuario.getRefreshToken().getToken();
         }
-        jwtToken = jwtUtil.createToken(authentication, DuracionToken.ACCES_TOKEN.getDuracion());
-        refreshToken = jwtUtil.createToken(authentication, DuracionToken.REFRESH_TOKEN.getDuracion());
-        //System.out.println(authentication.getAuthorities());
 
-
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-
-        for (GrantedAuthority authority : authorities) {
-            if(authority.getAuthority().equals("ROLE_ADMIN") || authority.getAuthority().equals("ROLE_USER") || authority.getAuthority().equals("ROLE_AUTOR") ) {
-                //Validar que si un usuario tiene mas de un rol se guarde el rol con mayor permiso
-                role = authority.getAuthority();
+        if (refreshToken != null) {
+            try {
+                jwtUtil.validateToken(refreshToken);
+            } catch (JWTVerificationException exception) {
+                // Si el refresh token es inválido o ha expirado, crear uno nuevo
+                refreshToken = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());
+                actualizarRefreshToken(usuario.getRefreshToken(), refreshToken);
             }
+        } else {
+            // Si no hay refresh token, crear uno nuevo
+            refreshToken = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());
         }
 
-        //System.out.println(oidcUser.getGivenName());
-        //System.out.println(oidcUser.getFamilyName());
-        //System.out.println(oidcUser.getPicture());
-        return new OidcUserPersonalizado(oidcUser, jwtToken, refreshToken, role, idUsuaruio);
+        return refreshToken;
+    }
+
+    // Método para obtener el rol del usuario
+    private String getRole(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(auth -> auth.equals("ROLE_ADMIN") || auth.equals("ROLE_USER") || auth.equals("ROLE_AUTOR"))
+                .findFirst()
+                .orElse("ROLE_USER");
+    }
+
+
+
+    public void actualizarRefreshToken(RefreshToken refreshToken, String nuevoToken){
+        refreshToken.setToken(nuevoToken);
+        refreshTokenService.update(refreshToken);
     }
 
 }

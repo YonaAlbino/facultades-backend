@@ -1,9 +1,12 @@
 package com.example.facultades.service;
 
+import com.example.facultades.enums.DuracionToken;
 import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.enums.Socket;
 import com.example.facultades.generics.GenericService;
+import com.example.facultades.generics.IgenericService;
+import com.example.facultades.model.RefreshToken;
 import com.example.facultades.model.Rol;
 import com.example.facultades.model.Usuario;
 import com.example.facultades.repository.IUsuarioRepository;
@@ -39,6 +42,12 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     private INotificacionService notificacionService;
 
     @Autowired
+    private IgenericService<RefreshToken, Long> refreshTokenService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
     @Lazy
     private IRolService rolService;
 
@@ -51,6 +60,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     @Transactional
     public Usuario saveUserOauth(String email) {
         Usuario usuario = new Usuario();
+        usuario.setRefreshToken(crearRefreshToken(usuario));
         List<Rol> roleList = new ArrayList<>();
         Rol rolPorDefecto = rolService.findRolByName("ADMIN");
         Rol managedRole = entityManager.merge(rolPorDefecto);
@@ -85,6 +95,8 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
 
     @Override
     public Usuario save(Usuario usuario) {
+        usuario.setRefreshToken(crearRefreshToken(usuario));
+        usuario.setListaRoles(Arrays.asList(rolService.findRolByName("ADMIN")));
         this.asociar(usuario);
         usuario.setPassword(this.encriptPassword(usuario.getPassword()));
         Usuario usuarioGuardado = usuarioRepo.save(usuario);
@@ -94,6 +106,12 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         }
         //Manejar caso de que el usuario no se haya guardado
         return usuarioGuardado;
+    }
+
+    public RefreshToken crearRefreshToken(Usuario usuario){
+        String token = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());
+        RefreshToken refreshToken = refreshTokenService.save(new RefreshToken(token));
+        return refreshTokenService.save(refreshToken);
     }
 
     @Override

@@ -16,7 +16,7 @@ public class OidcUserPersonalizado implements OidcUser {
     private String role;
     private Long idUsuario;
 
-    public OidcUserPersonalizado(OidcUser odiUserOriginal, String tokenInterno, String refreshToken, String role, Long idUsuario){
+    public OidcUserPersonalizado(OidcUser odiUserOriginal, String tokenInterno, String role, Long idUsuario){
         this.OdiUserOriginal = odiUserOriginal;
         this.tokenInterno = tokenInterno;
         this.refreshToken = refreshToken;

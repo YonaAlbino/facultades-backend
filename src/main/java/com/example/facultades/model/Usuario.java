@@ -32,7 +32,7 @@ public class Usuario extends BaseEntity implements INotificable<Usuario> {
     private boolean accountNotLocked;
     private boolean credentialNotExpired;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "rol_id"))
     private List<Rol> listaRoles = new ArrayList<>();
@@ -42,6 +42,9 @@ public class Usuario extends BaseEntity implements INotificable<Usuario> {
 
     @OneToMany()
     private List<Calificacion> listaCalificacion;
+
+    @OneToOne()
+    private RefreshToken refreshToken;
 
     @OneToMany(mappedBy = "usuario")
     //@JsonManagedReference

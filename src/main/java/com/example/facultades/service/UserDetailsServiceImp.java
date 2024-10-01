@@ -3,6 +3,8 @@ package com.example.facultades.service;
 import com.example.facultades.dto.AuthLoguinRequestDTO;
 import com.example.facultades.dto.AuthLoguinResponseDTO;
 import com.example.facultades.enums.DuracionToken;
+import com.example.facultades.generics.IgenericService;
+import com.example.facultades.model.RefreshToken;
 import com.example.facultades.util.JwtUtil;
 import com.example.facultades.model.Usuario;
 import com.example.facultades.repository.IUsuarioRepository;
@@ -38,19 +40,25 @@ public class UserDetailsServiceImp implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private IgenericService<RefreshToken, Long> refreshTokenService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepo.findUserEntityByusername(username).orElseThrow(
                 () -> new UsernameNotFoundException("El usuario " +username+ " no fue encontrado"));
 
+
+
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
 
+        System.out.println(usuario.getListaRoles().size());
         usuario.getListaRoles()
                 .stream()
                 .forEach(roles -> authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(roles.getNombreRol()))));
 
-        usuario.getListaRoles().stream()
+        usuario.getListaRoles()
+                .stream()
                 .flatMap(role -> role.getListaPermiso().stream())
                 .forEach(permiso -> authorityList.add(new SimpleGrantedAuthority(permiso.getNombrePermiso())));
 
@@ -93,13 +101,25 @@ public class UserDetailsServiceImp implements UserDetailsService {
         Authentication authentication = this.authenticate(username, password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Usuario usuario = usuarioRepo.findUserEntityByusername(username).get();
+        Usuario usuario = usuarioRepo.findUserEntityByusername((String) authentication.getPrincipal()).get();
         String role = Utili.obtenerRol(authentication);
 
-        String accesToken = jwtUtil.createToken(authentication, DuracionToken.ACCES_TOKEN.getDuracion());
-        String refreshToekn = jwtUtil.createToken(authentication, DuracionToken.REFRESH_TOKEN.getDuracion());
-        AuthLoguinResponseDTO authLoguinResponseDTO = new AuthLoguinResponseDTO(username, role, usuario.getId(),"Loguin correcto", accesToken, refreshToekn, true);
+        String accesToken = jwtUtil.createToken(authentication, 60 * 2000);
+
+        String refreshToekn = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());
+        actualizarRefreshToken(usuario.getRefreshToken(), refreshToekn);
+        //usuario.setRefreshToken(refreshToekn);
+        //usuario.getRefreshToken().setToken(refreshToekn);
+        //refreshTokenService.update(usuario.getRefreshToken());
+
+
+        AuthLoguinResponseDTO authLoguinResponseDTO = new AuthLoguinResponseDTO(username, role, usuario.getId(),"Loguin correcto", accesToken, true);
         return authLoguinResponseDTO;
+    }
+
+    public void actualizarRefreshToken(RefreshToken refreshToken, String nuevoToken){
+        refreshToken.setToken(nuevoToken);
+        refreshTokenService.update(refreshToken);
     }
 
 }

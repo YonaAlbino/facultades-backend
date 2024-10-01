@@ -8,6 +8,6 @@ public record AuthLoguinResponseDTO(String nombre,
                                     Long id,
                                     String mensaje,
                                     String token,
-                                    String refreshToken,
+                                    //String refreshToken,
                                     Boolean status) {
 }

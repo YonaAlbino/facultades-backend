@@ -6,11 +6,14 @@ import com.example.facultades.enums.Socket;
 import com.example.facultades.generics.BaseEntity;
 import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Comentario;
+import com.example.facultades.model.Usuario;
 import com.example.facultades.service.IComentarioService;
 import com.example.facultades.service.INotificacionService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,7 +74,7 @@ public class Utili {
 
     public static String obtenerRol(Authentication authentication){
         List<String> listaAutitys = convertirAuthoritysAListString(authentication);
-        String role;
+        String role = "";
         for (String authority : listaAutitys) {
             if(authority.equals("ROLE_ADMIN") || authority.equals("ROLE_USER") || authority.equals("ROLE_AUTOR") ) {
                 //Validar que si un usuario tiene mas de un rol se guarde el rol con mayor permiso
@@ -84,5 +87,20 @@ public class Utili {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)  // Mapea cada GrantedAuthority a su String
                 .collect(Collectors.toList());  // Convierte a lista
+    }
+
+    public static List<SimpleGrantedAuthority> crearAuthotitys(Usuario usuario){
+        List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
+
+        usuario.getListaRoles()
+                .stream()
+                .forEach(roles -> authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(roles.getNombreRol()))));
+
+        usuario.getListaRoles()
+                .stream()
+                .flatMap(role -> role.getListaPermiso().stream())
+                .forEach(permiso -> authorityList.add(new SimpleGrantedAuthority(permiso.getNombrePermiso())));
+
+        return  authorityList;
     }
 }

@@ -47,9 +47,9 @@ public class JwtUtil {
         return jwtToken;
     }
 
-    public String createToken(String username, String authorities, long milisegundos){
+    public String createRefreshToken(String nombreUsuario, long milisegundos){
         Algorithm algorithm = Algorithm.HMAC256(privateKey);
-        // username = authentication.getPrincipal().toString();
+        //String username = authentication.getPrincipal().toString();
 
         /*String authorities = authentication.getAuthorities()
                 .stream()
@@ -60,8 +60,8 @@ public class JwtUtil {
 
         String jwtToken = JWT.create()
                 .withIssuer(this.userGenerator)
-                .withSubject(username)
-                .withClaim("authorities", authorities)
+                .withSubject(nombreUsuario)
+                .withClaim("authorities", "ROLE_REFRESH")
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + (milisegundos)))
                 .withJWTId(UUID.randomUUID().toString())
@@ -69,6 +69,7 @@ public class JwtUtil {
                 .sign(algorithm);
         return jwtToken;
     }
+
 
     public DecodedJWT validateToken(String token){
         try{

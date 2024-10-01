@@ -23,11 +23,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         OidcUserPersonalizado oidcUserPersonalizado = (OidcUserPersonalizado) authentication.getPrincipal();
 
         String token = oidcUserPersonalizado.getTokenInterno();
-        String refreshTokem = oidcUserPersonalizado.getRefreshToken();
+       // String refreshTokem = oidcUserPersonalizado.getRefreshToken();
         String role = oidcUserPersonalizado.getRole();
         Long idUsuario = oidcUserPersonalizado.getIdUsuario();
         
-        String redirectUrl = "http://localhost:4200/?token=" + token + "&refreshToken=" + refreshTokem + "&role=" + role + "&idUsuario=" + idUsuario;
+        String redirectUrl = "http://localhost:4200/?token=" + token  + "&role=" + role + "&idUsuario=" + idUsuario;
 
         // Configura la redirección HTTP
         response.setStatus(HttpServletResponse.SC_FOUND);

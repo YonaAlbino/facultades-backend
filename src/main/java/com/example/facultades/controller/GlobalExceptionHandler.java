@@ -6,11 +6,18 @@ import com.example.facultades.excepciones.*;
 import com.example.facultades.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+        // Retorna una respuesta con un estado 403 (Forbidden) y un mensaje personalizado.
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acceso denegado: no tiene los permisos necesarios.");
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> manejadorExcepcionesGlobal(Exception ex) {
