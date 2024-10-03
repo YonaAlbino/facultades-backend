@@ -24,7 +24,7 @@ public class JwtUtil {
     @Value("${USER_GENERATOR}")
     private String userGenerator;
 
-    public String createToken(Authentication authentication, long milisegundos){
+    public String createToken(Authentication authentication, long milisegundos) {
         Algorithm algorithm = Algorithm.HMAC256(privateKey);
         String username = authentication.getPrincipal().toString();
 
@@ -47,7 +47,7 @@ public class JwtUtil {
         return jwtToken;
     }
 
-    public String createRefreshToken(String nombreUsuario, long milisegundos){
+    public String createRefreshToken(String nombreUsuario, long milisegundos) {
         Algorithm algorithm = Algorithm.HMAC256(privateKey);
         //String username = authentication.getPrincipal().toString();
 
@@ -71,15 +71,28 @@ public class JwtUtil {
     }
 
 
-    public DecodedJWT validateToken(String token){
-        try{
+    public DecodedJWT validateToken(String token) {
+        try {
             Algorithm algorithm = Algorithm.HMAC256(privateKey);
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer(this.userGenerator)
                     .build();
             DecodedJWT decodedJWT = verifier.verify(token);
             return decodedJWT;
-        } catch (JWTVerificationException jwtVerificationException){
+        } catch (JWTVerificationException jwtVerificationException) {
+            throw new JWTVerificationException("Token invalido");
+        }
+    }
+
+    public String extractauthorities(String token){
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(privateKey);
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer(this.userGenerator)
+                    .build();
+            DecodedJWT decodedJWT = verifier.verify(token);
+            return decodedJWT.getClaim("authorities").asString();
+        } catch (JWTVerificationException jwtVerificationException) {
             throw new JWTVerificationException("Token invalido");
         }
     }

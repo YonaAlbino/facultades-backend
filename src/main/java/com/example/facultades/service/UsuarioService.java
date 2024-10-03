@@ -95,6 +95,10 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
 
     @Override
     public Usuario save(Usuario usuario) {
+        usuario.setEnable(true);
+        usuario.setAccountNotExpired(true);
+        usuario.setAccountNotLocked(true);
+        usuario.setCredentialNotExpired(true);
         usuario.setRefreshToken(crearRefreshToken(usuario));
         usuario.setListaRoles(Arrays.asList(rolService.findRolByName("ADMIN")));
         this.asociar(usuario);

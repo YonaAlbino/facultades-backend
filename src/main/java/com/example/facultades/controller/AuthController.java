@@ -75,29 +75,31 @@ public class AuthController {
     @PreAuthorize("hasRole('REFRESH')")
     @PostMapping("/getAccesToken")
     public ResponseEntity<AuthLoguinResponseDTO> getAccesToken(@RequestBody String refreshToken) {
-        // Validar el JWT
-        DecodedJWT decodedJWT = jwtUtil.validateToken(refreshToken);
 
-        String userName = jwtUtil.extractUsername(decodedJWT);
+        DecodedJWT decodeJWTRefreshToken = jwtUtil.validateToken(refreshToken);
+
+        String userName = jwtUtil.extractUsername(decodeJWTRefreshToken);
         Authentication authentication = userDetailsServiceImp.authenticate(userName);
 
         String nuevoAccesToken = createAccessToken(authentication);
+        String authorities  = jwtUtil.extractauthorities(nuevoAccesToken);
 
-        Optional<Usuario> usuarioOptional = iUsuarioRepository.findUserEntityByusername(userName);
-        Long idUsuario;
-        if (usuarioOptional.isPresent()) {
-            idUsuario = usuarioOptional.get().getId(); // Obtenemos el ID del usuario
-        } else {
-            throw new UsernameNotFoundException("Usuario no encontrado");
-        }
-
-        String authorities = jwtUtil.getSpecifClaim(decodedJWT, "authorities").asString();
+        Long idUsuario = this.obtenerIdUsuario(userName);
 
         // Crear la respuesta DTO
         AuthLoguinResponseDTO authLoguinResponseDTO = new AuthLoguinResponseDTO(
                 userName, authorities, idUsuario, "Login correcto", nuevoAccesToken, true);
 
         return ResponseEntity.ok(authLoguinResponseDTO);
+    }
+
+    public Long obtenerIdUsuario(String userName){
+        Optional<Usuario> usuarioOptional = iUsuarioRepository.findUserEntityByusername(userName);
+        if (usuarioOptional.isPresent()) {
+            return usuarioOptional.get().getId();
+        } else {
+            throw new UsernameNotFoundException("Usuario no encontrado");
+        }
     }
 
     private String createAccessToken(Authentication authentication) {

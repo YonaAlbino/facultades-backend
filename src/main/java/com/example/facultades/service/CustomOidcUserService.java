@@ -132,7 +132,7 @@ public class CustomOidcUserService extends OidcUserService {
     private String getRole(Authentication authentication) {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .filter(auth -> auth.equals("ROLE_ADMIN") || auth.equals("ROLE_USER") || auth.equals("ROLE_AUTOR"))
+                .filter(auth -> auth.equals("ROLE_ADMIN") || auth.equals("ROLE_USER"))
                 .findFirst()
                 .orElse("ROLE_USER");
     }

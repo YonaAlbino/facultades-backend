@@ -34,7 +34,8 @@ public class ControllerGeneric <E extends BaseEntity, ID extends Number>{
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable ID id){
          genericService.delete(id);
-         return ResponseEntity.ok("Eliminado");
+        String mensaje = "{\"mensaje\":\"" + "Eliminación exitosa" + "\"}";
+        return ResponseEntity.ok(mensaje);
     }
 
     @PostMapping
