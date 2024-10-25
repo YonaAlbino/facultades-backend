@@ -1,5 +1,6 @@
 package com.example.facultades.controller;
 
+import com.example.facultades.dto.RespuestaDTO;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.generics.IGenericRepository;
 import com.example.facultades.model.Respuesta;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/respuesta")
-public class RespuestaController extends ControllerGeneric<Respuesta, Long> {
+public class RespuestaController extends ControllerGeneric<Respuesta, RespuestaDTO,Long> {
 
     @Autowired
    IRespuestaRepository respuestaRepository;

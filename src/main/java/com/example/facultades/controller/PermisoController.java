@@ -1,11 +1,14 @@
 package com.example.facultades.controller;
 
 
+import com.example.facultades.dto.PermisoDTO;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.model.Permiso;
+import com.example.facultades.repository.IPermisoRepository;
 import com.example.facultades.service.INotificacionService;
 import com.example.facultades.service.IPermisoService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +20,22 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/permiso")
 //@PreAuthorize("hasRole('ADMIN')")
-public class PermisoController extends ControllerGeneric<Permiso, Long> {
+public class PermisoController extends ControllerGeneric<Permiso, PermisoDTO,Long> {
+
+    @Autowired
+    IPermisoRepository permisoRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+
+    /*@GetMapping("/obtenerPermisoDTO/{id}")
+    public ResponseEntity<PermisoDTO> obtener(@PathVariable Long id){
+        PermisoDTO permisoDTO = new PermisoDTO(modelMapper);
+        Optional<Permiso> permiso = permisoRepository.findById(id);
+        return ResponseEntity.ok(permisoDTO.convertirDTO(permiso.get()));
+    }*/
+
 
     /*@Autowired
     private IPermisoService permisoService;

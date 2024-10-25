@@ -1,5 +1,6 @@
 package com.example.facultades.controller;
 
+import com.example.facultades.dto.UniversidadDTO;
 import com.example.facultades.excepciones.RegistroExistenteException;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.generics.GenericService;
@@ -19,7 +20,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/universidad")
-public class UniversidadController extends ControllerGeneric<Universidad, Long> {
+public class UniversidadController extends ControllerGeneric<Universidad, UniversidadDTO, Long> {
 
     @Autowired
     private IUniversidadService universidadService;

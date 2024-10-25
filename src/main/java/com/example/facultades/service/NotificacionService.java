@@ -1,5 +1,7 @@
 package com.example.facultades.service;
+import com.example.facultades.dto.BaseDTO;
 import com.example.facultades.dto.DetalleNotificacion;
+import com.example.facultades.dto.NotificacionDTO;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.model.Notificacion;
@@ -11,6 +13,7 @@ import com.example.facultades.repository.IUsuarioRepository;
 import com.example.facultades.util.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -38,6 +41,10 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
     @Autowired
     private IUsuarioLeidoRepository usuarioLeidoRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
+
     public NotificacionService(SimpMessagingTemplate messagingTemplate){
         this.messagingTemplate = messagingTemplate;
     }
@@ -53,6 +60,16 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
     @Override
     public Notificacion update(Notificacion notificacion) {
         return this.save(notificacion);
+    }
+
+    @Override
+    public BaseDTO<Notificacion> convertirDTO(Notificacion notificacion) {
+        return modelMapper.map(notificacion, NotificacionDTO.class);
+    }
+
+    @Override
+    public Notificacion converirEntidad(BaseDTO<Notificacion> DTO) {
+        return modelMapper.map(DTO, Notificacion.class);
     }
 
 

@@ -1,28 +1,21 @@
 package com.example.facultades.controller;
 
-import com.example.facultades.dto.ComentarioDto;
+import com.example.facultades.dto.ComentarioDTO;
 import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.model.Comentario;
-import com.example.facultades.model.Usuario;
-import com.example.facultades.repository.IUsuarioRepository;
 import com.example.facultades.service.IComentarioService;
 import com.example.facultades.service.INotificacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/comentario")
-public class ComentarioController extends ControllerGeneric<Comentario, Long> {
+public class ComentarioController extends ControllerGeneric<Comentario, ComentarioDTO,Long> {
 
     @Autowired
     private IComentarioService comentarioService;

@@ -1,5 +1,7 @@
 package com.example.facultades.controller;
 
+import com.example.facultades.dto.BaseDTO;
+import com.example.facultades.dto.CarreraDTO;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.model.Carrera;
 import com.example.facultades.service.ICarreraService;
@@ -16,13 +18,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/carrera")
-public class CarreraController extends ControllerGeneric<Carrera, Long> {
+public class CarreraController extends ControllerGeneric<Carrera,CarreraDTO,Long> {
 
     @Autowired
     private ICarreraService carreraService;
 
     @Autowired
     private IComentarioService comentarioService;
+
 
 
     @GetMapping("/paginadas")

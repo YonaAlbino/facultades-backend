@@ -1,6 +1,8 @@
 package com.example.facultades.service;
 
+import com.example.facultades.dto.BaseDTO;
 import com.example.facultades.dto.DetalleNotificacion;
+import com.example.facultades.dto.UniversidadDTO;
 import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.enums.Socket;
@@ -11,6 +13,7 @@ import com.example.facultades.model.Comentario;
 import com.example.facultades.model.Universidad;
 import com.example.facultades.repository.IUniversidadRepository;
 import com.example.facultades.util.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +40,10 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
     @Autowired
     private IgenericService<Comentario, Long> comentarioService;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
+
     @Override
     public Universidad update(Universidad universidad) {
         if (Utili.verificarInsercionNuevoComentario(universidad, universidadRepository, universidad.getListaComentarios())) {
@@ -44,6 +51,18 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
         }
         this.asociar(universidad);
         return universidadRepository.save(universidad);
+    }
+
+    @Override
+    public BaseDTO<Universidad> convertirDTO(Universidad universidad) {
+        return modelMapper.map(universidad, UniversidadDTO.class);
+    }
+
+    @Override
+    public Universidad converirEntidad(BaseDTO<Universidad> DTO) {
+        Universidad universidad = modelMapper.map(DTO, Universidad.class);
+        System.out.println(universidad);
+        return universidad;
     }
 
     @Override

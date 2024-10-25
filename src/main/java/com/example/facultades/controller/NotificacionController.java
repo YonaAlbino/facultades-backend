@@ -1,5 +1,6 @@
 package com.example.facultades.controller;
 
+import com.example.facultades.dto.NotificacionDTO;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.model.Notificacion;
 import com.example.facultades.repository.INotificacionRepository;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/notificacion")
-public class NotificacionController extends ControllerGeneric<Notificacion, Long> {
+public class NotificacionController extends ControllerGeneric<Notificacion, NotificacionDTO,Long> {
 
     @Autowired
     private INotificacionService notificacionService;

@@ -6,11 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +19,7 @@ import java.util.List;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Usuario extends BaseEntity implements INotificable<Usuario> {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -47,11 +46,12 @@ public class Usuario extends BaseEntity implements INotificable<Usuario> {
     private RefreshToken refreshToken;
 
     @OneToMany(mappedBy = "usuario")
-    //@JsonManagedReference
+    @JsonManagedReference(value = "usuario-comentario")
     private List<Comentario> listaComentarios;
 
-    //@OneToMany()
-   // private  List<Respuesta> listaRespuesta;
+    @OneToMany()
+    @JsonManagedReference(value = "usuario-respuesta")
+    private  List<Respuesta> listaRespuesta;
 
     @OneToMany()
     private List<Reaccion> listaReaccion;

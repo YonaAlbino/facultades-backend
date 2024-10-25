@@ -2,10 +2,7 @@ package com.example.facultades.model;
 
 import com.example.facultades.generics.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@ToString
 public class Notificacion extends BaseEntity {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

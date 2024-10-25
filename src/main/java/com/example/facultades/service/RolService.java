@@ -1,11 +1,14 @@
 package com.example.facultades.service;
 
 
+import com.example.facultades.dto.BaseDTO;
+import com.example.facultades.dto.RolDTO;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.model.Rol;
 import com.example.facultades.repository.IRolRepository;
 import com.example.facultades.util.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +22,25 @@ public class RolService extends GenericService<Rol, Long> implements IRolService
     private IAsociarEntidades asociarEntidades;
 
     @Autowired
+    private ModelMapper modelMapper;
+
+
+    @Autowired
     private IRepositoryFactory repositoryFactory;
 
     @Override
     public Rol update(Rol rol) {
         return this.save(rol);
+    }
+
+    @Override
+    public BaseDTO<Rol> convertirDTO(Rol rol) {
+        return modelMapper.map(rol, RolDTO.class);
+    }
+
+    @Override
+    public Rol converirEntidad(BaseDTO<Rol> DTO) {
+        return modelMapper.map(DTO, Rol.class);
     }
 
     @Override

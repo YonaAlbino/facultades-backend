@@ -1,5 +1,7 @@
 package com.example.facultades.service;
 
+import com.example.facultades.dto.BaseDTO;
+import com.example.facultades.dto.UsuarioDTO;
 import com.example.facultades.enums.DuracionToken;
 import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
@@ -16,6 +18,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -50,6 +53,10 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     @Autowired
     @Lazy
     private IRolService rolService;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
 
     @Override
     public String encriptPassword(String password) {
@@ -122,6 +129,16 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     public Usuario update(Usuario usuario) {
         this.asociar(usuario);
         return this.usuarioRepo.save(usuario);
+    }
+
+    @Override
+    public BaseDTO<Usuario> convertirDTO(Usuario usuario) {
+        return modelMapper.map(usuario, UsuarioDTO.class);
+    }
+
+    @Override
+    public Usuario converirEntidad(BaseDTO<Usuario> DTO) {
+        return modelMapper.map(DTO, Usuario.class);
     }
 
     @Override

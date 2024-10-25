@@ -1,5 +1,6 @@
 package com.example.facultades.controller;
 
+import com.example.facultades.dto.ReaccionDTO;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.service.IReaccionService;
 import com.example.facultades.model.Reaccion;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/reaccion")
-public class ReaccionController extends ControllerGeneric<Reaccion, Long> {
+public class ReaccionController extends ControllerGeneric<Reaccion, ReaccionDTO,Long> {
 
     /*@Autowired
     private IReaccionService reaccionService;

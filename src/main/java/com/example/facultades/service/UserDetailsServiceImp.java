@@ -43,6 +43,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
     @Autowired
     private IgenericService<RefreshToken, Long> refreshTokenService;
 
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepo.findUserEntityByusername(username).orElseThrow(

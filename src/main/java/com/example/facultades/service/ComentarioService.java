@@ -1,5 +1,7 @@
 package com.example.facultades.service;
 
+import com.example.facultades.dto.BaseDTO;
+import com.example.facultades.dto.ComentarioDTO;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.model.Comentario;
@@ -7,6 +9,7 @@ import com.example.facultades.repository.IComentarioRepository;
 import com.example.facultades.util.IAsociarEntidades;
 import com.example.facultades.util.IEntidadAsociable;
 import com.example.facultades.util.IRepositoryFactory;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +30,11 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
     @Autowired
     private IRepositoryFactory repositoryFactory;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @Autowired
+    private ModelMapper modelMapper;
+
+
+   // @PreAuthorize("hasRole('ADMIN')")
     @Override
     public Comentario save(Comentario comentario) {
         this.asociar(comentario);
@@ -37,6 +44,16 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
     @Override
     public Comentario update(Comentario comentario) {
       return this.save(comentario);
+    }
+
+    @Override
+    public BaseDTO<Comentario> convertirDTO(Comentario comentario) {
+        return modelMapper.map(comentario, ComentarioDTO.class);
+    }
+
+    @Override
+    public Comentario converirEntidad(BaseDTO<Comentario> DTO) {
+        return modelMapper.map(DTO, Comentario.class);
     }
 
     @Override

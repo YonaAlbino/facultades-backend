@@ -1,5 +1,6 @@
 package com.example.facultades.generics;
 
+import com.example.facultades.dto.BaseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -34,6 +35,5 @@ public abstract class GenericService <E extends BaseEntity, ID extends Number> i
     public E update(E entidad){
         return this.save(entidad);
     }
-
     //public abstract void procersarLista(E entidad);
 }

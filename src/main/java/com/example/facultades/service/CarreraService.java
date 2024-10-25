@@ -1,5 +1,7 @@
 package com.example.facultades.service;
 
+import com.example.facultades.dto.BaseDTO;
+import com.example.facultades.dto.CarreraDTO;
 import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
@@ -12,6 +14,7 @@ import com.example.facultades.model.Comentario;
 import com.example.facultades.model.Universidad;
 import com.example.facultades.repository.ICarreraRepository;
 import com.example.facultades.util.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,6 +41,9 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
     @Autowired
     private IgenericService<Comentario,Long> comentarioService;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
     public Carrera save(Carrera carrera) {
         this.asociar(carrera);
@@ -59,6 +65,16 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
             System.out.println("No tiene mas comentarios");
         this.asociar(carrera);
         return carreraRepository.save(carrera);
+    }
+
+    @Override
+    public BaseDTO<Carrera> convertirDTO(Carrera carrera) {
+        return modelMapper.map(carrera, CarreraDTO.class);
+    }
+
+    @Override
+    public Carrera converirEntidad(BaseDTO<Carrera> DTO) {
+        return modelMapper.map(DTO, Carrera.class);
     }
 
 

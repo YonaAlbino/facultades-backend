@@ -15,6 +15,7 @@ import java.util.List;
 //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Comentario extends BaseEntity  implements INotificable<Comentario> {
    /* @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -26,16 +27,17 @@ public class Comentario extends BaseEntity  implements INotificable<Comentario> 
     @OneToMany()
     private List<Reaccion> listaReaccion;
 
-    //@OneToMany()
-    //private List<Respuesta> listaRespuesta;
+    @OneToMany()
+    private List<Respuesta> listaRespuesta;
 
-    @OneToMany
-    private List<Comentario> listaComentario;
+    /*@OneToMany
+    private List<Comentario> listaComentario;*/
 
-   @ManyToOne
-   //@JsonBackReference
-   @JoinColumn(name = "usuario_id")
-   private Usuario usuario;
+    @ManyToOne
+    @JsonBackReference(value = "usuario-comentario")
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
 
     @Override
     @JsonIgnore

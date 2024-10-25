@@ -1,6 +1,7 @@
 package com.example.facultades.dto;
 
 import com.example.facultades.model.Calificacion;
+import com.example.facultades.model.Carrera;
 import com.example.facultades.model.Comentario;
 import com.example.facultades.model.Universidad;
 import jakarta.persistence.*;
@@ -15,16 +16,22 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CarreraDto {
+public class CarreraDTO extends BaseDTO<Carrera> {
+    private Long id;
     private String nombre;
     private String grado;
     private String duracion;
-    private Universidad universidad;
-    private boolean activa =  true;
+    private boolean activa;
+    private List<ComentarioDTO> listaComentarios;
+    private List<CalificacionDTO> listaCalificacion;
 
-    @OneToMany()
-    private List<Comentario> listaComentarios;
+   /* @Override
+    public BaseDTO convertirDTO(Carrera entidad) {
+        return null;
+    }
 
-    @OneToMany()
-    private List<Calificacion> listaCalificacion;
+    @Override
+    public Carrera convertirEntidad(BaseDTO dto) {
+        return null;
+    }*/
 }

@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString
 public class Permiso extends BaseEntity  {
    /* @Id
     @GeneratedValue (strategy = GenerationType.SEQUENCE)
