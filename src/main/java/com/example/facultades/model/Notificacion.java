@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@ToString
+@ToString(callSuper = true)
 public class Notificacion extends BaseEntity {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

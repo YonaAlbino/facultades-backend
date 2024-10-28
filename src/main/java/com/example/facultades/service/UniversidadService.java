@@ -1,6 +1,7 @@
 package com.example.facultades.service;
 
 import com.example.facultades.dto.BaseDTO;
+import com.example.facultades.dto.ComentarioDTO;
 import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.dto.UniversidadDTO;
 import com.example.facultades.enums.MensajeNotificacionAdmin;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -43,6 +45,8 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private ComentarioService comenService;
 
     @Override
     public Universidad update(Universidad universidad) {
@@ -55,7 +59,15 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
 
     @Override
     public BaseDTO<Universidad> convertirDTO(Universidad universidad) {
-        return modelMapper.map(universidad, UniversidadDTO.class);
+        UniversidadDTO universidadDTO = modelMapper.map(universidad, UniversidadDTO.class);
+        if(universidad.getListaComentarios() != null){
+            List<ComentarioDTO> comentarioDTOS = new ArrayList<>();
+            for (Comentario comentario : universidad.getListaComentarios()){
+                comentarioDTOS.add((ComentarioDTO) comenService.convertirDTO(comentario));
+            }
+            universidadDTO.setListaComentarios(comentarioDTOS);
+        }
+        return universidadDTO;
     }
 
     @Override

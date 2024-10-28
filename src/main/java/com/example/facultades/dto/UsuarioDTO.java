@@ -2,10 +2,7 @@ package com.example.facultades.dto;
 import com.example.facultades.model.Usuario;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +11,11 @@ import java.util.List;
 @AllArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class UsuarioDTO extends BaseDTO<Usuario> {
-        private Long id; // Asumiendo que BaseEntity tiene este campo
+
         private String username;
+        private String password;
         private boolean enable;
         private RefreshTokenDto refreshToken;
         private List<RolDTO> listaRoles;

@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class Universidad extends BaseEntity implements INotificable<Universidad> {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

@@ -10,7 +10,7 @@ import lombok.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class RefreshToken extends BaseEntity {
     @Lob
     private String token;

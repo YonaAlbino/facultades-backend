@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class Rol extends BaseEntity  {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

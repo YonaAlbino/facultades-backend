@@ -2,6 +2,7 @@ package com.example.facultades.model;
 
 import com.example.facultades.generics.BaseEntity;
 import com.example.facultades.util.INotificable;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -14,7 +15,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class Respuesta extends BaseEntity   {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -23,7 +24,12 @@ public class Respuesta extends BaseEntity   {
     private Date fecha;
 
     @OneToMany()
-    private List<Respuesta> listaRespuesta = new ArrayList<Respuesta>();
+  //  @JsonManagedReference(value = "respuesta")
+    private List<Respuesta> listaRespuesta = new ArrayList<>();
+
+   /* @ManyToOne
+    @JsonBackReference(value = "respuesta")
+    private Respuesta respuestaPadre; // Referencia a la respuesta padre*/
 
     @OneToMany()
     private List<Reaccion> listaReaccion;

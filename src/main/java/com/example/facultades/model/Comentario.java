@@ -15,7 +15,7 @@ import java.util.List;
 //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class Comentario extends BaseEntity  implements INotificable<Comentario> {
    /* @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

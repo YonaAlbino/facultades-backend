@@ -9,7 +9,7 @@ import lombok.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class Calificacion extends BaseEntity {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

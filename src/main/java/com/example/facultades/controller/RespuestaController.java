@@ -31,4 +31,8 @@ public class RespuestaController extends ControllerGeneric<Respuesta, RespuestaD
         return iGenericRepository.findById(idUsuario).get().getUsuario().getUsername();
     }*/
 
+    @GetMapping("/entidad/{id}")
+    public Respuesta traerRespuesta(@PathVariable Long id){
+        return  respuestaRepository.findById(id).get();
+    }
 }

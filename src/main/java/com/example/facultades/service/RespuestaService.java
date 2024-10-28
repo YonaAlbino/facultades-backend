@@ -11,6 +11,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class RespuestaService extends GenericService<Respuesta, Long> implements IRespuestaService, IEntidadAsociable<Respuesta> {
 
@@ -34,8 +37,27 @@ public class RespuestaService extends GenericService<Respuesta, Long> implements
 
     @Override
     public BaseDTO<Respuesta> convertirDTO(Respuesta respuesta) {
-        return modelMapper.map(respuesta, RespuestaDTO.class);
+        System.out.println("hola");
+        // Mapeo inicial de Respuesta a RespuestaDTO
+        RespuestaDTO respuestaDTO = modelMapper.map(respuesta, RespuestaDTO.class);
+
+        // Asignar username del usuario principal si existe
+        if (respuesta.getUsuario() != null && respuesta.getUsuario().getUsername() != null) {
+            respuestaDTO.setUsername(respuesta.getUsuario().getUsername());
+        }
+
+        // Mapeo recursivo de la lista de respuestas
+        if (respuesta.getListaRespuesta() != null) {
+            List<RespuestaDTO> listaRespuestaDTO = new ArrayList<>();
+            for (Respuesta r : respuesta.getListaRespuesta()) {
+                listaRespuestaDTO.add((RespuestaDTO) this.convertirDTO(r)); // Llamada recursiva
+            }
+            respuestaDTO.setListaRespuesta(listaRespuestaDTO);
+        }
+
+        return respuestaDTO;
     }
+
 
     @Override
     public Respuesta converirEntidad(BaseDTO<Respuesta> DTO) {

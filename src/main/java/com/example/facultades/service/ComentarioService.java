@@ -2,9 +2,11 @@ package com.example.facultades.service;
 
 import com.example.facultades.dto.BaseDTO;
 import com.example.facultades.dto.ComentarioDTO;
+import com.example.facultades.dto.RespuestaDTO;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.model.Comentario;
+import com.example.facultades.model.Respuesta;
 import com.example.facultades.repository.IComentarioRepository;
 import com.example.facultades.util.IAsociarEntidades;
 import com.example.facultades.util.IEntidadAsociable;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,12 +30,15 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
     @Autowired
     private IAsociarEntidades asociarEntidades;
 
+
     @Autowired
     private IRepositoryFactory repositoryFactory;
 
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private  RespuestaService respuestaService;
 
    // @PreAuthorize("hasRole('ADMIN')")
     @Override
@@ -46,15 +52,45 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
       return this.save(comentario);
     }
 
+
     @Override
     public BaseDTO<Comentario> convertirDTO(Comentario comentario) {
-        return modelMapper.map(comentario, ComentarioDTO.class);
+        ComentarioDTO comentarioDTO = modelMapper.map(comentario, ComentarioDTO.class);
+
+        if (comentario.getUsuario() != null && comentario.getUsuario().getUsername() != null) {
+            comentarioDTO.setUsername(comentario.getUsuario().getUsername());
+        }
+        // Verificar que ambas listas de respuestas no sean nulas antes de asignar usernames
+       /*if (comentario.getListaRespuesta() != null && comentarioDTO.getListaRespuesta() != null) {
+            for (int i = 0; i < comentario.getListaRespuesta().size() && i < comentarioDTO.getListaRespuesta().size(); i++) {
+                Respuesta respuesta = comentario.getListaRespuesta().get(i);
+                RespuestaDTO respuestaDTO = comentarioDTO.getListaRespuesta().get(i);
+
+                if (respuesta.getUsuario() != null && respuesta.getUsuario().getUsername() != null) {
+                    respuestaDTO.setUsername(respuesta.getUsuario().getUsername());
+                }
+            }
+        }*/
+        // Convertir la lista de respuestas del comentario usando el servicio de Respuesta
+        if(comentario.getListaRespuesta() != null){
+            List<RespuestaDTO> listaRespuestasDTO = new ArrayList<>();
+            for (Respuesta respuesta : comentario.getListaRespuesta()) {
+                RespuestaDTO respuestaDTO = (RespuestaDTO) respuestaService.convertirDTO(respuesta);
+                listaRespuestasDTO.add(respuestaDTO);
+            }
+            comentarioDTO.setListaRespuesta(listaRespuestasDTO);
+        }
+        return comentarioDTO;
     }
+
 
     @Override
     public Comentario converirEntidad(BaseDTO<Comentario> DTO) {
-        return modelMapper.map(DTO, Comentario.class);
+        Comentario comentario = modelMapper.map(DTO, Comentario.class);
+        return comentario;
     }
+
+
 
     @Override
     public void asociar(Comentario comentario) {
@@ -63,10 +99,14 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
     }
 
     @Override
-    public List<Comentario> findComentariosByUniversidadId(Long idUniversidad, int cantidadRegistros, int pagina) {
+    public List<ComentarioDTO> findComentariosByUniversidadId(Long idUniversidad, int cantidadRegistros, int pagina) {
         Pageable pageable = PageRequest.of(cantidadRegistros, pagina);
         List<Comentario> listaComentarios = comentarioRepository.findComentariosByUniversidadId(idUniversidad, pageable);
-        return listaComentarios;
+        List<ComentarioDTO> listaComentarioDTO = new ArrayList<>();
+        for (Comentario comentario : listaComentarios){
+            listaComentarioDTO.add((ComentarioDTO) this.convertirDTO(comentario));
+        }
+        return listaComentarioDTO;
     }
 
     @Override

@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class Carrera extends BaseEntity implements INotificable<Carrera> {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

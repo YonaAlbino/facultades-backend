@@ -3,7 +3,9 @@ package com.example.facultades.controller;
 import com.example.facultades.dto.ComentarioDTO;
 import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.generics.ControllerGeneric;
+import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Comentario;
+import com.example.facultades.service.ComentarioService;
 import com.example.facultades.service.IComentarioService;
 import com.example.facultades.service.INotificacionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,16 @@ public class ComentarioController extends ControllerGeneric<Comentario, Comentar
     private IComentarioService comentarioService;
 
     @Autowired
+    private IgenericService<Comentario, Long> igenericService;
+
+    @GetMapping("/entidad/{id}")
+    public ResponseEntity<Comentario> entidad(@PathVariable Long id ){
+        return  ResponseEntity.ok(igenericService.findById(id).get());
+    }
+
+    @Autowired
     private INotificacionService notificacionService;
+
 
     @GetMapping("/enviarNotificacionUsuario")
     public void enviarNotificacionUsuario(){
@@ -31,11 +42,11 @@ public class ComentarioController extends ControllerGeneric<Comentario, Comentar
 
 
     @GetMapping("/encontrarComentariosPorIdUniversidad/{idUniversidad}")
-    public ResponseEntity<List<Comentario>> encontrarComentariosPorIdUniversidad(
+    public ResponseEntity<List<ComentarioDTO>> encontrarComentariosPorIdUniversidad(
             @PathVariable long idUniversidad,
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue =  "10") int tamanio){
-        List<Comentario> listaComentarios = comentarioService.findComentariosByUniversidadId(idUniversidad, pagina, tamanio);
+        List<ComentarioDTO> listaComentarios = comentarioService.findComentariosByUniversidadId(idUniversidad, pagina, tamanio);
         return new ResponseEntity<>(listaComentarios, HttpStatus.OK);
     }
 

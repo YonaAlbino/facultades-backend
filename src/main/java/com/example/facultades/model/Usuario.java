@@ -19,7 +19,7 @@ import java.util.List;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class Usuario extends BaseEntity implements INotificable<Usuario> {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -55,6 +55,7 @@ public class Usuario extends BaseEntity implements INotificable<Usuario> {
 
     @OneToMany()
     private List<Reaccion> listaReaccion;
+
 
     @Override
     @JsonIgnore

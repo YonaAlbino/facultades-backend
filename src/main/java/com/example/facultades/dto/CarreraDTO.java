@@ -5,10 +5,7 @@ import com.example.facultades.model.Carrera;
 import com.example.facultades.model.Comentario;
 import com.example.facultades.model.Universidad;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -16,8 +13,9 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class CarreraDTO extends BaseDTO<Carrera> {
-    private Long id;
+
     private String nombre;
     private String grado;
     private String duracion;

@@ -1,16 +1,14 @@
 package com.example.facultades.dto;
 
 import com.example.facultades.model.UsuarioLeido;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class UsuarioLeidoDTO extends BaseDTO<UsuarioLeido> {
-    private Long id;
+
     private Long idUsuario;
 }

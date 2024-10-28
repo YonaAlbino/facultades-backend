@@ -2,10 +2,7 @@ package com.example.facultades.dto;
 
 import com.example.facultades.model.Permiso;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,8 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class PermisoDTO extends BaseDTO<Permiso> {
-    private  Long id;
+
     private String nombrePermiso;
     @JsonIgnore
     private ModelMapper modelMapper;

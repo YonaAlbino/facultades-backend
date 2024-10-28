@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@ToString
+@ToString(callSuper = true)
 public class UsuarioLeido extends BaseEntity {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

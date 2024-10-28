@@ -1,10 +1,7 @@
 package com.example.facultades.dto;
 
 import com.example.facultades.model.Respuesta;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
@@ -12,11 +9,14 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class RespuestaDTO extends BaseDTO<Respuesta> {
-    private Long id;
+
     private String mensaje;
     private Date fecha;
     private List<RespuestaDTO> listaRespuesta;  // Relación recursiva de respuestas
     private List<ReaccionDTO> listaReaccion;
-    private UsuarioDTO usuario;  // Se mapea el usuario asociado
+    private Long usuarioId;         // Solo el ID del usuario
+    private String username;
+   // private Long respuestaPadreId; // ID de la respuesta padre, si la hay
 }
