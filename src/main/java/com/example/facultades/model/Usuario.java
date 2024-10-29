@@ -40,6 +40,7 @@ public class Usuario extends BaseEntity implements INotificable<Usuario> {
     private List<Universidad> listaUniversidad;
 
     @OneToMany()
+    @JsonManagedReference(value = "usuario-calificacion")
     private List<Calificacion> listaCalificacion;
 
     @OneToOne()

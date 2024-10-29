@@ -25,10 +25,10 @@ public class ComentarioController extends ControllerGeneric<Comentario, Comentar
     @Autowired
     private IgenericService<Comentario, Long> igenericService;
 
-    @GetMapping("/entidad/{id}")
+    /*@GetMapping("/entidad/{id}")
     public ResponseEntity<Comentario> entidad(@PathVariable Long id ){
         return  ResponseEntity.ok(igenericService.findById(id).get());
-    }
+    }*/
 
     @Autowired
     private INotificacionService notificacionService;
@@ -51,11 +51,11 @@ public class ComentarioController extends ControllerGeneric<Comentario, Comentar
     }
 
     @GetMapping("/encontrarComentariosPorIdCarrera/{idCarrera}")
-    public ResponseEntity<List<Comentario>> encontrarComentariosPorIdCarrera(
+    public ResponseEntity<List<ComentarioDTO>> encontrarComentariosPorIdCarrera(
             @PathVariable long idCarrera,
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue =  "10") int tamanio){
-        List<Comentario> listaComentarios = comentarioService.findComentariosByCarreraId(idCarrera, pagina, tamanio);
+        List<ComentarioDTO> listaComentarios = comentarioService.findComentariosByCarreraId(idCarrera, pagina, tamanio);
         return new ResponseEntity<>(listaComentarios, HttpStatus.OK);
     }
 

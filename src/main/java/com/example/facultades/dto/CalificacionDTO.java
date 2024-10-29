@@ -11,4 +11,5 @@ import lombok.*;
 public class CalificacionDTO extends BaseDTO<Calificacion> {
 
     private Double nota;
+    private Long usuarioId;
 }

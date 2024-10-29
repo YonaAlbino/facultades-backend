@@ -60,17 +60,6 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
         if (comentario.getUsuario() != null && comentario.getUsuario().getUsername() != null) {
             comentarioDTO.setUsername(comentario.getUsuario().getUsername());
         }
-        // Verificar que ambas listas de respuestas no sean nulas antes de asignar usernames
-       /*if (comentario.getListaRespuesta() != null && comentarioDTO.getListaRespuesta() != null) {
-            for (int i = 0; i < comentario.getListaRespuesta().size() && i < comentarioDTO.getListaRespuesta().size(); i++) {
-                Respuesta respuesta = comentario.getListaRespuesta().get(i);
-                RespuestaDTO respuestaDTO = comentarioDTO.getListaRespuesta().get(i);
-
-                if (respuesta.getUsuario() != null && respuesta.getUsuario().getUsername() != null) {
-                    respuestaDTO.setUsername(respuesta.getUsuario().getUsername());
-                }
-            }
-        }*/
         // Convertir la lista de respuestas del comentario usando el servicio de Respuesta
         if(comentario.getListaRespuesta() != null){
             List<RespuestaDTO> listaRespuestasDTO = new ArrayList<>();
@@ -110,10 +99,14 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
     }
 
     @Override
-    public List<Comentario> findComentariosByCarreraId(Long idCarrera, int cantidadRegistros, int pagina) {
+    public List<ComentarioDTO> findComentariosByCarreraId(Long idCarrera, int cantidadRegistros, int pagina) {
         Pageable pageable = PageRequest.of(cantidadRegistros, pagina);
         List<Comentario> listaComentarios = comentarioRepository.findComentariosByCarreraId(idCarrera, pageable);
-        return listaComentarios;
+        List<ComentarioDTO> listaComentarioDTO = new ArrayList<>();
+        for (Comentario comentario : listaComentarios){
+            listaComentarioDTO.add((ComentarioDTO) this.convertirDTO(comentario));
+        }
+        return listaComentarioDTO;
     }
 
 

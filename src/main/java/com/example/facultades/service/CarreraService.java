@@ -2,6 +2,7 @@ package com.example.facultades.service;
 
 import com.example.facultades.dto.BaseDTO;
 import com.example.facultades.dto.CarreraDTO;
+import com.example.facultades.dto.ComentarioDTO;
 import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,6 +42,9 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
 
     @Autowired
     private IgenericService<Comentario,Long> comentarioService;
+
+    @Autowired
+    private ComentarioService comenService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -69,8 +74,35 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
 
     @Override
     public BaseDTO<Carrera> convertirDTO(Carrera carrera) {
-        return modelMapper.map(carrera, CarreraDTO.class);
+        CarreraDTO carreraDTO = modelMapper.map(carrera, CarreraDTO.class);
+
+        if(carrera.getListaComentarios() != null){
+            List<ComentarioDTO> comentarioDTOS = new ArrayList<>();
+            for (Comentario comentario : carrera.getListaComentarios()){
+                comentarioDTOS.add((ComentarioDTO) comenService.convertirDTO(comentario));
+            }
+            carreraDTO.setListaComentarios(comentarioDTOS);
+        }
+
+        return carreraDTO;
     }
+
+    /*
+        @Override
+    public BaseDTO<Universidad> convertirDTO(Universidad universidad) {
+        UniversidadDTO universidadDTO = modelMapper.map(universidad, UniversidadDTO.class);
+
+        if(universidad.getListaComentarios() != null){
+            List<ComentarioDTO> comentarioDTOS = new ArrayList<>();
+            for (Comentario comentario : universidad.getListaComentarios()){
+                comentarioDTOS.add((ComentarioDTO) comenService.convertirDTO(comentario));
+            }
+            universidadDTO.setListaComentarios(comentarioDTOS);
+        }
+
+        return universidadDTO;
+    }
+    * */
 
     @Override
     public Carrera converirEntidad(BaseDTO<Carrera> DTO) {

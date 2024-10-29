@@ -2,6 +2,7 @@ package com.example.facultades.controller;
 
 import com.example.facultades.dto.CalificacionDTO;
 import com.example.facultades.generics.ControllerGeneric;
+import com.example.facultades.generics.IGenericRepository;
 import com.example.facultades.model.Calificacion;
 import com.example.facultades.service.ICalificacionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,4 +17,11 @@ import java.util.Optional;
 @RequestMapping("/calificacion")
 public class CalificacionController extends ControllerGeneric<Calificacion, CalificacionDTO,Long> {
 
+    @Autowired
+    private IGenericRepository<Calificacion, Long> calificacionIGenericRepository;
+
+    @GetMapping("/entidad/{id}")
+    public Calificacion xxx(@PathVariable Long id){
+        return  calificacionIGenericRepository.findById(id).get();
+    }
 }

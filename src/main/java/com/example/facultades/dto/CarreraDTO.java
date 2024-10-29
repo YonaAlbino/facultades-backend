@@ -23,6 +23,7 @@ public class CarreraDTO extends BaseDTO<Carrera> {
     private List<ComentarioDTO> listaComentarios;
     private List<CalificacionDTO> listaCalificacion;
 
+
    /* @Override
     public BaseDTO convertirDTO(Carrera entidad) {
         return null;

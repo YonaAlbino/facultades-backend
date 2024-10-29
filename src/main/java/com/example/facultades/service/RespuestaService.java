@@ -37,7 +37,6 @@ public class RespuestaService extends GenericService<Respuesta, Long> implements
 
     @Override
     public BaseDTO<Respuesta> convertirDTO(Respuesta respuesta) {
-        System.out.println("hola");
         // Mapeo inicial de Respuesta a RespuestaDTO
         RespuestaDTO respuestaDTO = modelMapper.map(respuesta, RespuestaDTO.class);
 
@@ -50,7 +49,7 @@ public class RespuestaService extends GenericService<Respuesta, Long> implements
         if (respuesta.getListaRespuesta() != null) {
             List<RespuestaDTO> listaRespuestaDTO = new ArrayList<>();
             for (Respuesta r : respuesta.getListaRespuesta()) {
-                listaRespuestaDTO.add((RespuestaDTO) this.convertirDTO(r)); // Llamada recursiva
+                listaRespuestaDTO.add((RespuestaDTO) this.convertirDTO(r));
             }
             respuestaDTO.setListaRespuesta(listaRespuestaDTO);
         }

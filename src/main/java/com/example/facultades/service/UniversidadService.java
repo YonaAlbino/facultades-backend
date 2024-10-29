@@ -60,6 +60,7 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
     @Override
     public BaseDTO<Universidad> convertirDTO(Universidad universidad) {
         UniversidadDTO universidadDTO = modelMapper.map(universidad, UniversidadDTO.class);
+
         if(universidad.getListaComentarios() != null){
             List<ComentarioDTO> comentarioDTOS = new ArrayList<>();
             for (Comentario comentario : universidad.getListaComentarios()){
@@ -67,13 +68,13 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
             }
             universidadDTO.setListaComentarios(comentarioDTOS);
         }
+
         return universidadDTO;
     }
 
     @Override
     public Universidad converirEntidad(BaseDTO<Universidad> DTO) {
         Universidad universidad = modelMapper.map(DTO, Universidad.class);
-        System.out.println(universidad);
         return universidad;
     }
 
