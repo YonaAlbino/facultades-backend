@@ -45,7 +45,6 @@ public class ControllerGeneric <E extends BaseEntity, D extends BaseDTO<E> ,ID e
     public ResponseEntity<E> update(@RequestBody D dto){
         //rolService.procesarLista(rol);
         E entidad = genericService.converirEntidad(dto);
-        System.out.println(entidad);
         E entidadActualizada = genericService.update(entidad);
         return ResponseEntity.ok(genericService.update(entidadActualizada));
     }
@@ -68,7 +67,6 @@ public class ControllerGeneric <E extends BaseEntity, D extends BaseDTO<E> ,ID e
         //rolService.procesarLista(rol);
 
         E entidad = genericService.converirEntidad(dto);
-        System.out.println("controler " + entidad);
        E entidadGuardada = genericService.save(entidad);
        D dto1 = (D) genericService.convertirDTO(entidadGuardada);
        return  ResponseEntity.ok(dto1);

@@ -12,4 +12,5 @@ public class ReaccionDTO extends BaseDTO<Reaccion> {
 
     private int meGusta;
     private  int noMegusta;
+    private Long usuarioId;
 }

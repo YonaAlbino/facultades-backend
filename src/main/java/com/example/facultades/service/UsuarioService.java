@@ -133,12 +133,14 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
 
     @Override
     public BaseDTO<Usuario> convertirDTO(Usuario usuario) {
-        return modelMapper.map(usuario, UsuarioDTO.class);
+        UsuarioDTO usuarioDTO = modelMapper.map(usuario, UsuarioDTO.class);
+        return usuarioDTO;
     }
 
     @Override
     public Usuario converirEntidad(BaseDTO<Usuario> DTO) {
-        return modelMapper.map(DTO, Usuario.class);
+        Usuario usuario = modelMapper.map(DTO, Usuario.class);
+        return usuario;
     }
 
     @Override
