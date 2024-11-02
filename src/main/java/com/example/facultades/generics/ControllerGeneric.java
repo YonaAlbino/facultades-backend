@@ -1,6 +1,7 @@
 package com.example.facultades.generics;
 
 import com.example.facultades.dto.BaseDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

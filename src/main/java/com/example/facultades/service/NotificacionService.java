@@ -94,8 +94,8 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
 
 
     @Override
-    public void guardarNotificacionAdmin(Long idEvento, String informacion) {
-        Notificacion notificacion = new Notificacion();
+    public void guardarNotificacionAdmin(Long idEvento, String informacion, Notificacion notificacion) {
+        //Notificacion notificacion = new Notificacion();
         List<UsuarioLeido> listaLeidos = new ArrayList<>();
         notificacion.setListaDeusuariosLeidos(listaLeidos);
         notificacion. setIdRedireccionamiento(idEvento);

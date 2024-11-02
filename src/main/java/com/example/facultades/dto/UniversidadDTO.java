@@ -16,6 +16,7 @@ public class UniversidadDTO extends BaseDTO<Universidad> {
     private String direccion;
     private String descripcion;
     private String direccionWeb;
+    private Long usuarioId;
     private List<CarreraDTO> listaCarreras;
     private List<CalificacionDTO> listaCalificacion;
     private List<ComentarioDTO> listaComentarios;

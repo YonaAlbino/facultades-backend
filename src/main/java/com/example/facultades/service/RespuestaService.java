@@ -1,9 +1,12 @@
 package com.example.facultades.service;
 
 import com.example.facultades.dto.BaseDTO;
+import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.dto.RespuestaDTO;
 import com.example.facultades.enums.NombreRepositorio;
+import com.example.facultades.enums.Socket;
 import com.example.facultades.generics.GenericService;
+import com.example.facultades.model.Notificacion;
 import com.example.facultades.model.Respuesta;
 import com.example.facultades.repository.IRespuestaRepository;
 import com.example.facultades.util.*;
@@ -26,6 +29,8 @@ public class RespuestaService extends GenericService<Respuesta, Long> implements
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private  INotificacionService notificacionService;
 
     @Autowired
     private IRepositoryFactory repositoryFactory;
@@ -66,7 +71,16 @@ public class RespuestaService extends GenericService<Respuesta, Long> implements
     @Override
     public Respuesta save(Respuesta respuesta) {
         this.asociar(respuesta);
-        return respuestaRepository.save(respuesta);
+        Respuesta respuestaGuardada =  respuestaRepository.save(respuesta);
+        if(respuestaGuardada.getId() != null){
+            Notificacion notificacion = new Notificacion();
+            notificacion.setRespuesta(true);
+            DetalleNotificacion detalleNotificacion = Utili.generarDetalleNotificacion("Se creo una nueva respuesta", respuestaGuardada);
+            notificacionService.enviarNotificacionByWebSocket(Socket.ADMIN_PREFIJO.getRuta(), detalleNotificacion);
+            notificacionService.guardarNotificacionAdmin(respuestaGuardada.getId(), "Se creo una nueva respuesta :", notificacion);
+            return  respuestaGuardada;
+        }else
+            throw new RuntimeException("La respuesta no se pudo guardar");
     }
 
     @Override

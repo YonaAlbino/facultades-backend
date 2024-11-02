@@ -4,6 +4,7 @@ import com.example.facultades.dto.UniversidadDTO;
 import com.example.facultades.excepciones.RegistroExistenteException;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.generics.GenericService;
+import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Universidad;
 import com.example.facultades.service.IUniversidadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class UniversidadController extends ControllerGeneric<Universidad, Univer
 
     @Autowired
     private IUniversidadService universidadService;
+
+    @Autowired
+    private IgenericService<Universidad, Long> IuniversidadGenericService;
 
     @GetMapping("/obtenerTopUniversidades")
     public ResponseEntity<List<Universidad>> obtenerPrimerasTresImagenes(
@@ -57,5 +61,10 @@ public class UniversidadController extends ControllerGeneric<Universidad, Univer
         return new ResponseEntity<>(ListaUniversidades, HttpStatus.OK);
     }
 
+    @GetMapping("/getAllComents/{id}")
+    public  ResponseEntity<Integer> getAllComents(@PathVariable Long id){
+         Universidad universidad = IuniversidadGenericService.findById(id).get();
+         return ResponseEntity.ok( universidad.getListaComentarios().size());
+    }
 
 }

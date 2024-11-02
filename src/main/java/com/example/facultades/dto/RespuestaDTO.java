@@ -18,5 +18,6 @@ public class RespuestaDTO extends BaseDTO<Respuesta> {
     private List<ReaccionDTO> listaReaccion;
     private Long usuarioId;         // Solo el ID del usuario
     private String username;
+    private boolean editado;
    // private Long respuestaPadreId; // ID de la respuesta padre, si la hay
 }

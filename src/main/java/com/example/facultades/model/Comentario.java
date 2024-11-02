@@ -23,6 +23,7 @@ public class Comentario extends BaseEntity  implements INotificable<Comentario> 
     private Date fecha;
     @Column(length = 1000) // Por ejemplo, aquí estamos especificando una longitud máxima de 1000 caracteres
     private String mensaje;
+    private boolean editado;
 
     @OneToMany()
     private List<Reaccion> listaReaccion;

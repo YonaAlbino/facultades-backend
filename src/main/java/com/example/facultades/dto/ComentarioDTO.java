@@ -18,4 +18,5 @@ public class ComentarioDTO extends BaseDTO<Comentario> {
     private List<RespuestaDTO> listaRespuesta;
     private Long usuarioId;         // Solo el ID del usuario
     private String username;
+    private boolean editado;
 }

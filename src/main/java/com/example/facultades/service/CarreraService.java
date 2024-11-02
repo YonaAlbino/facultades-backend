@@ -12,6 +12,7 @@ import com.example.facultades.generics.GenericService;
 import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Carrera;
 import com.example.facultades.model.Comentario;
+import com.example.facultades.model.Notificacion;
 import com.example.facultades.model.Universidad;
 import com.example.facultades.repository.ICarreraRepository;
 import com.example.facultades.util.*;
@@ -54,7 +55,9 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
         this.asociar(carrera);
         Carrera carreraGuardada =  carreraRepository.save(carrera);
         if(carreraGuardada.getId() != null){
-            Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_CARRERA.getNotificacion(), carreraGuardada, notificacionService);
+            Notificacion notificacion = new Notificacion();
+            notificacion.setCarrera(true);
+            Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_CARRERA.getNotificacion(), carreraGuardada, notificacionService, notificacion);
             return carreraGuardada;
         }
         //Manejar error en caso no se guarde
@@ -66,8 +69,6 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
     public Carrera update(Carrera carrera) {
         if (Utili.verificarInsercionNuevoComentario(carrera, carreraRepository, carrera.getListaComentarios()))
             Utili.enviarGuardarNotificacionNuevoComentario(carrera.getListaComentarios(), comentarioService, notificacionService);
-        else
-            System.out.println("No tiene mas comentarios");
         this.asociar(carrera);
         return carreraRepository.save(carrera);
     }
@@ -106,7 +107,9 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
 
     @Override
     public Carrera converirEntidad(BaseDTO<Carrera> DTO) {
-        return modelMapper.map(DTO, Carrera.class);
+        CarreraDTO carreraDTO = (CarreraDTO) DTO;
+        Carrera carrera = modelMapper.map(carreraDTO, Carrera.class);
+        return  carrera;
     }
 
 

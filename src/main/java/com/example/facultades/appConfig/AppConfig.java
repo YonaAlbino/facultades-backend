@@ -11,12 +11,6 @@ public class AppConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-
-        // Configuración explícita para mapear el id de ComentarioDTO a Comentario
-        modelMapper.typeMap(ComentarioDTO.class, Comentario.class).addMappings(mapper ->
-                mapper.map(ComentarioDTO::getId, Comentario::setId)
-        );
-
         return modelMapper;
     }
 }

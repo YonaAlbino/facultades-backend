@@ -20,6 +20,12 @@ public class Notificacion extends BaseEntity {
     private String informacion;
     private Long idRedireccionamiento;
     private Boolean leida;
+    private boolean carrera;
+    private boolean comentario;
+    private boolean usuario;
+    private boolean universidad;
+    private boolean permiso;
+    private boolean respuesta;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "notificaciones_usuarios", joinColumns = @JoinColumn(name = "notificacion_id"),

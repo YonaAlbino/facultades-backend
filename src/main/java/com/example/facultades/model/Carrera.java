@@ -2,6 +2,7 @@ package com.example.facultades.model;
 
 import com.example.facultades.generics.BaseEntity;
 import com.example.facultades.util.INotificable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,11 @@ public class Carrera extends BaseEntity implements INotificable<Carrera> {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Calificacion> listaCalificacion;
+
+    @ManyToOne
+    @JsonBackReference(value = "universidad-carrera")
+    @JoinColumn(name = "universidad_id")
+    private Universidad universidad;
 
     @Override
     @JsonIgnore

@@ -109,7 +109,4 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
         return listaComentarioDTO;
     }
 
-
-
-
 }

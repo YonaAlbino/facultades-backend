@@ -3,7 +3,9 @@ package com.example.facultades.controller;
 import com.example.facultades.dto.BaseDTO;
 import com.example.facultades.dto.CarreraDTO;
 import com.example.facultades.generics.ControllerGeneric;
+import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Carrera;
+import com.example.facultades.model.Universidad;
 import com.example.facultades.service.ICarreraService;
 import com.example.facultades.service.IComentarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ public class CarreraController extends ControllerGeneric<Carrera,CarreraDTO,Long
     @Autowired
     private IComentarioService comentarioService;
 
+    @Autowired
+    private IgenericService<Carrera, Long> IgenericServiceCarrera;
 
 
     @GetMapping("/paginadas")
@@ -46,6 +50,12 @@ public class CarreraController extends ControllerGeneric<Carrera,CarreraDTO,Long
     {
         List<Carrera> carreras = carreraService.getTopCarreras(pagina, tamanio);
         return new ResponseEntity<>(carreras, HttpStatus.OK);
+    }
+
+    @GetMapping("/getAllComents/{id}")
+    public  ResponseEntity<Integer> getAllComents(@PathVariable Long id){
+        Carrera carrera = IgenericServiceCarrera.findById(id).get();
+        return ResponseEntity.ok( carrera.getListaComentarios().size());
     }
 
 

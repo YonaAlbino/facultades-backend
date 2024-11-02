@@ -16,4 +16,11 @@ public class NotificacionDTO extends BaseDTO<Notificacion> {
     private Boolean leida;
     private List<UsuarioDTO>  listaUsuarios;
     private List<UsuarioLeidoDTO> listaDeusuariosLeidos;
+    private boolean carrera;
+    private boolean comentario;
+    private boolean usuario;
+    private boolean universidad;
+    private boolean permiso;
+    private boolean respuesta;
+
 }

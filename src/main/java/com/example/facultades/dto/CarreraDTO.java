@@ -22,6 +22,8 @@ public class CarreraDTO extends BaseDTO<Carrera> {
     private boolean activa;
     private List<ComentarioDTO> listaComentarios;
     private List<CalificacionDTO> listaCalificacion;
+    private Long universidadId;
+
 
 
    /* @Override

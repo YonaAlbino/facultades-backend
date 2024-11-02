@@ -16,12 +16,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class Respuesta extends BaseEntity   {
+public class Respuesta extends BaseEntity  implements INotificable<Respuesta> {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;*/
     private String mensaje;
     private Date fecha;
+    private boolean editado;
 
     @OneToMany()
   //  @JsonManagedReference(value = "respuesta")
@@ -39,4 +40,8 @@ public class Respuesta extends BaseEntity   {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
+    @Override
+    public String getDetalleEvento() {
+        return this.getMensaje();
+    }
 }

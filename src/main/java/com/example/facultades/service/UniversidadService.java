@@ -11,6 +11,7 @@ import com.example.facultades.excepciones.RegistroExistenteException;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Comentario;
+import com.example.facultades.model.Notificacion;
 import com.example.facultades.model.Universidad;
 import com.example.facultades.repository.IUniversidadRepository;
 import com.example.facultades.util.*;
@@ -83,7 +84,9 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
         this.asociar(universidad);
         Universidad universidadGuardada = universidadRepository.save(universidad);
         if(universidadGuardada.getId() != null){
-            Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_UNIVERSIDAD.getNotificacion(), universidadGuardada, notificacionService);
+            Notificacion notificacion = new Notificacion();
+            notificacion.setUniversidad(true);
+            Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_UNIVERSIDAD.getNotificacion(), universidadGuardada, notificacionService, notificacion);
             return universidadGuardada;
         }
         //manejar error en caso de no guarda la uni

@@ -6,9 +6,12 @@ import com.example.facultades.enums.Socket;
 import com.example.facultades.generics.BaseEntity;
 import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Comentario;
+import com.example.facultades.model.Notificacion;
 import com.example.facultades.model.Usuario;
 import com.example.facultades.service.IComentarioService;
 import com.example.facultades.service.INotificacionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -60,16 +63,18 @@ public class Utili {
      */
 
     public static void enviarGuardarNotificacionNuevoComentario(List<Comentario> listaComentarios, IgenericService<Comentario, Long> comentarioService, INotificacionService notificacionService){
+        Notificacion notificacion = new Notificacion();
+        notificacion.setComentario(true);
         Comentario ultimoComentarioAgregado =  Utili.recuperarUltimoComentario(listaComentarios, comentarioService);
         DetalleNotificacion detalleNotificacion = Utili.generarDetalleNotificacion(MensajeNotificacionAdmin.PUBLICACION_COMENTARIO.getNotificacion(), ultimoComentarioAgregado);
         notificacionService.enviarNotificacionByWebSocket(Socket.ADMIN_PREFIJO.getRuta(), detalleNotificacion);
-        notificacionService.guardarNotificacionAdmin(ultimoComentarioAgregado.getId(),MensajeNotificacionAdmin.PUBLICACION_COMENTARIO.getNotificacion());
+        notificacionService.guardarNotificacionAdmin(ultimoComentarioAgregado.getId(),MensajeNotificacionAdmin.PUBLICACION_COMENTARIO.getNotificacion(), notificacion);
     }
 
-    public static <E extends BaseEntity & INotificable<E>> void manejarNotificacionAdmin(String evento, E entidadGuardada, INotificacionService notificacionService){
+    public static <E extends BaseEntity & INotificable<E>> void manejarNotificacionAdmin(String evento, E entidadGuardada, INotificacionService notificacionService, Notificacion notificacion){
         DetalleNotificacion detalleNotificacion = new DetalleNotificacion(evento, entidadGuardada.getDetalleEvento(), entidadGuardada.getId());
         notificacionService.enviarNotificacionByWebSocket(Socket.ADMIN_PREFIJO.getRuta(),detalleNotificacion);
-        notificacionService.guardarNotificacionAdmin(entidadGuardada.getId(), evento);
+        notificacionService.guardarNotificacionAdmin(entidadGuardada.getId(), evento, notificacion);
     }
 
     public static String obtenerRol(Authentication authentication){
@@ -103,4 +108,6 @@ public class Utili {
 
         return  authorityList;
     }
+
+
 }

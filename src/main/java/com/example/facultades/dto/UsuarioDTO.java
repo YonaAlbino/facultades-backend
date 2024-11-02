@@ -1,5 +1,6 @@
 package com.example.facultades.dto;
 import com.example.facultades.model.Usuario;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
@@ -24,4 +25,6 @@ public class UsuarioDTO extends BaseDTO<Usuario> {
         private List<ComentarioDTO> listaComentarios;
         private List<RespuestaDTO> listaRespuesta;
         private List<ReaccionDTO> listaReaccion;
+
+
 }
