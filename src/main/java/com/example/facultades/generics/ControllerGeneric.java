@@ -43,11 +43,12 @@ public class ControllerGeneric <E extends BaseEntity, D extends BaseDTO<E> ,ID e
     }
 
     @PutMapping
-    public ResponseEntity<E> update(@RequestBody D dto){
+    public ResponseEntity<D> update(@RequestBody D dto){
         //rolService.procesarLista(rol);
         E entidad = genericService.converirEntidad(dto);
         E entidadActualizada = genericService.update(entidad);
-        return ResponseEntity.ok(genericService.update(entidadActualizada));
+        D dto1 = (D) genericService.convertirDTO(entidadActualizada);
+        return ResponseEntity.ok(dto1);
     }
 
     @DeleteMapping("/{id}")

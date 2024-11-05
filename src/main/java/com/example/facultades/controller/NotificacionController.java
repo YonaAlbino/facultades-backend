@@ -53,7 +53,7 @@ public class NotificacionController extends ControllerGeneric<Notificacion, Noti
 
 
     @GetMapping("/byUserId/{idUser}")
-    public ResponseEntity<List<Notificacion>> getNotificacionByIdUser(@PathVariable Long idUser){
+    public ResponseEntity<List<NotificacionDTO>> getNotificacionByIdUser(@PathVariable Long idUser){
         return ResponseEntity.ok(notificacionService.getNotificacionByIdUser(idUser));
     }
 

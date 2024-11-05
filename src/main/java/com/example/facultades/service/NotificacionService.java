@@ -13,6 +13,7 @@ import com.example.facultades.repository.IUsuarioRepository;
 import com.example.facultades.util.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -64,13 +65,47 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
 
     @Override
     public BaseDTO<Notificacion> convertirDTO(Notificacion notificacion) {
-        return modelMapper.map(notificacion, NotificacionDTO.class);
+         NotificacionDTO notificacionDTO =  modelMapper.map(notificacion, NotificacionDTO.class);
+         List<Long> listaIdsUsuarios = new ArrayList<>();
+        List<Long> listaUsuariosLeidsIds = new ArrayList<>();
+
+         for(Usuario usuario : notificacion.getListaUsuarios()){
+             listaIdsUsuarios.add(usuario.getId());
+         }
+         notificacionDTO.setListaUsuariosIds(listaIdsUsuarios);
+
+        for(UsuarioLeido usuarioLeido : notificacion.getListaDeusuariosLeidos()){
+            listaUsuariosLeidsIds.add(usuarioLeido.getId());
+        }
+        notificacionDTO.setListaDeusuariosLeidosIds(listaUsuariosLeidsIds);
+        return  notificacionDTO;
     }
+
 
     @Override
     public Notificacion converirEntidad(BaseDTO<Notificacion> DTO) {
-        return modelMapper.map(DTO, Notificacion.class);
+        if (DTO == null) {
+            throw new IllegalArgumentException("El DTO no puede ser nulo");
+        }
+        NotificacionDTO notificacionDTO = (NotificacionDTO) DTO;
+        Notificacion notificacion = modelMapper.map(DTO, Notificacion.class);
+        List<Usuario> listaUsuarios = new ArrayList<>();
+        List<UsuarioLeido> listaUsuariosLeidos = new ArrayList<>();
+
+        for (Long id : notificacionDTO.getListaUsuariosIds()) {
+            Usuario usuario = usuRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + id));
+            listaUsuarios.add(usuario);
+        }
+        notificacion.setListaUsuarios(listaUsuarios);
+
+        for (Long id : notificacionDTO.getListaDeusuariosLeidosIds()) {
+            UsuarioLeido usuarioLeido = usuarioLeidoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuario leído no encontrado con ID: " + id));
+            listaUsuariosLeidos.add(usuarioLeido);
+        }
+        notificacion.setListaDeusuariosLeidos(listaUsuariosLeidos);
+        return notificacion;
     }
+
 
 
     @Override
@@ -106,8 +141,13 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
     }
 
     @Override
-    public List<Notificacion> getNotificacionByIdUser(Long idUser) {
-        return notificacionRepo.findNotificacionesByUsuarioId(idUser);
+    public List<NotificacionDTO> getNotificacionByIdUser(Long idUser) {
+        List<Notificacion> listaNotificaciones = notificacionRepo.findNotificacionesByUsuarioId(idUser);
+        List<NotificacionDTO> listaNotificaionesDTO = new ArrayList<>();
+        for (Notificacion notificacion : listaNotificaciones){
+            listaNotificaionesDTO.add((NotificacionDTO) this.convertirDTO(notificacion));
+        }
+        return listaNotificaionesDTO;
     }
 
     @Override
