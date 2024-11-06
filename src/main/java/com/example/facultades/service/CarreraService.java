@@ -68,7 +68,7 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
     @Override
     public Carrera update(Carrera carrera) {
         if (Utili.verificarInsercionNuevoComentario(carrera, carreraRepository, carrera.getListaComentarios()))
-            Utili.enviarGuardarNotificacionNuevoComentario(carrera.getListaComentarios(), comentarioService, notificacionService);
+            Utili.enviarGuardarNotificacionNuevoComentario(carrera,carrera.getListaComentarios(), comentarioService, notificacionService);
         this.asociar(carrera);
         return carreraRepository.save(carrera);
     }

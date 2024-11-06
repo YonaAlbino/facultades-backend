@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface INotificacionRepository extends IGenericRepository<Notificacion, Long> {
@@ -21,9 +22,11 @@ public interface INotificacionRepository extends IGenericRepository<Notificacion
     @Query("SELECT n FROM Notificacion n JOIN n.listaUsuarios u WHERE n.leida = false AND u.id = :usuarioId")
     List<Notificacion> findByLeidaFalse(Long usuarioId);
 
-
     @Modifying
     @Transactional
     @Query("UPDATE Notificacion n SET n.leida = true WHERE n.id IN (SELECT n.id FROM Notificacion n JOIN n.listaUsuarios u WHERE u.id = :usuarioId AND n.leida = false)")
     void marcarNotificacionesALeidas(@Param("usuarioId") Long usuarioId);
+
+    @Query("SELECT u.id FROM Usuario u WHERE u.id <> :id")
+    List<Long> filtrarId(Long id);
 }

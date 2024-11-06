@@ -5,13 +5,8 @@ import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.Socket;
 import com.example.facultades.generics.BaseEntity;
 import com.example.facultades.generics.IgenericService;
-import com.example.facultades.model.Comentario;
-import com.example.facultades.model.Notificacion;
-import com.example.facultades.model.Usuario;
-import com.example.facultades.service.IComentarioService;
+import com.example.facultades.model.*;
 import com.example.facultades.service.INotificacionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -48,28 +43,85 @@ public class Utili {
         return new DetalleNotificacion(evento, entidad.getDetalleEvento(),entidad.getId());
     }
 
-    /*
-        @Override
-    public Universidad update(Universidad universidad) {
-        if (Utili.verificarInsercionNuevoComentario(universidad, universidadRepository, universidad.getListaComentarios())) {
-            Comentario ultimoComentarioAgregado =  Utili.recuperarUltimoComentario(universidad.getListaComentarios(), comentarioService);
-            DetalleNotificacion detalleNotificacion = Utili.generarDetalleNotificacion(MensajeNotificacionAdmin.PUBLICACION_COMENTARIO.getNotificacion(), ultimoComentarioAgregado);
-            notificacionService.enviarNotificacionByWebSocket(Socket.ADMIN_PREFIJO.getRuta(), detalleNotificacion);
-            notificacionService.guardarNotificacionAdmin(ultimoComentarioAgregado.getId(),MensajeNotificacionAdmin.PUBLICACION_COMENTARIO.getNotificacion());
-        }
-        this.asociar(universidad);
-        return universidadRepository.save(universidad);
-    }
-     */
 
-    public static void enviarGuardarNotificacionNuevoComentario(List<Comentario> listaComentarios, IgenericService<Comentario, Long> comentarioService, INotificacionService notificacionService){
+    public static <E extends BaseEntity & InotificarPropietario<E> & ItipoEntidad> void enviarGuardarNotificacionNuevoComentario(E entidad, List<Comentario> listaComentarios,
+                                                                                                                  IgenericService<Comentario, Long> comentarioService,
+                                                                                                                  INotificacionService notificacionService) {
+
+        Comentario ultimoComentario = obtenerUltimoComentario(listaComentarios, comentarioService);
+        DetalleNotificacion detalleNotificacion = crearDetalleNotificacion(ultimoComentario);
+
+        // Enviar notificación al administrador
+        enviarNotificacionAdmin(detalleNotificacion, notificacionService);
+        guardarNotificacionAdmin(ultimoComentario, notificacionService);
+
+        // Obtener el propietario de la entidad solo una vez
+        Long idPropietario = entidad.retornarPorpietario(entidad);
+
+        // Si el propietario no es el usuario que comentó, enviar una notificación al propietario
+        if (idPropietario != ultimoComentario.getUsuario().getId()) {
+            Notificacion notificacion = new Notificacion();
+            notificacion.setPublicacionComentada(true);
+
+            if(entidad.obtenerTipoClase() == Universidad.class)
+                notificacion.setUniversidad(true);
+            if(entidad.obtenerTipoClase() == Carrera.class)
+                notificacion.setCarrera(true);
+            
+            enviarNotificacionAlPropietario(idPropietario, ultimoComentario, entidad, notificacionService, notificacion);
+        }
+    }
+
+    private static void enviarNotificacionAlPropietario(Long idPropietario, Comentario ultimoComentario, BaseEntity entidad,
+                                                        INotificacionService notificacionService, Notificacion notificacion) {
+
+        //Notificacion notificacion = new Notificacion();
+        String mensaje = "Han comentado tu publicación";
+
+        // Guardar notificación para el propietario
+        notificacionService.guardarNotificacionUsuario(idPropietario, entidad.getId(), mensaje, notificacion);
+
+        // Crear el detalle de la notificación para el propietario
+        DetalleNotificacion detalleNotificacionUsuario = new DetalleNotificacion(
+                "Han publicado un comentario en tu publicación", ultimoComentario.getMensaje(), entidad.getId());
+
+        // Enviar la notificación por WebSocket al propietario
+        enviarNotificacionUsuario(detalleNotificacionUsuario, notificacionService, idPropietario);
+    }
+
+
+    private static Comentario obtenerUltimoComentario(List<Comentario> listaComentarios,
+                                                      IgenericService<Comentario, Long> comentarioService) {
+        return Utili.recuperarUltimoComentario(listaComentarios, comentarioService);
+    }
+
+    private static DetalleNotificacion crearDetalleNotificacion(Comentario comentario) {
+        String mensaje = MensajeNotificacionAdmin.PUBLICACION_COMENTARIO.getNotificacion();
+        return Utili.generarDetalleNotificacion(mensaje, comentario);
+    }
+
+    private static void enviarNotificacionAdmin(DetalleNotificacion detalleNotificacion,
+                                                INotificacionService notificacionService) {
+        notificacionService.enviarNotificacionByWebSocket(Socket.ADMIN_PREFIJO.getRuta(), detalleNotificacion);
+    }
+
+    private static void enviarNotificacionUsuario(DetalleNotificacion detalleNotificacion,
+                                                INotificacionService notificacionService, Long idUsuario) {
+        notificacionService.enviarNotificacionByWebSocket(Socket.TOPICO_PERSONAL.getRuta()+"/"+idUsuario, detalleNotificacion);
+    }
+
+    private static void guardarNotificacionAdmin(Comentario comentario, INotificacionService notificacionService) {
+        Notificacion notificacion = crearNotificacion();
+        String mensaje = MensajeNotificacionAdmin.PUBLICACION_COMENTARIO.getNotificacion();
+        notificacionService.guardarNotificacionAdmin(comentario.getId(), mensaje, notificacion);
+    }
+
+    private static Notificacion crearNotificacion() {
         Notificacion notificacion = new Notificacion();
         notificacion.setComentario(true);
-        Comentario ultimoComentarioAgregado =  Utili.recuperarUltimoComentario(listaComentarios, comentarioService);
-        DetalleNotificacion detalleNotificacion = Utili.generarDetalleNotificacion(MensajeNotificacionAdmin.PUBLICACION_COMENTARIO.getNotificacion(), ultimoComentarioAgregado);
-        notificacionService.enviarNotificacionByWebSocket(Socket.ADMIN_PREFIJO.getRuta(), detalleNotificacion);
-        notificacionService.guardarNotificacionAdmin(ultimoComentarioAgregado.getId(),MensajeNotificacionAdmin.PUBLICACION_COMENTARIO.getNotificacion(), notificacion);
+        return notificacion;
     }
+
 
     public static <E extends BaseEntity & INotificable<E>> void manejarNotificacionAdmin(String evento, E entidadGuardada, INotificacionService notificacionService, Notificacion notificacion){
         DetalleNotificacion detalleNotificacion = new DetalleNotificacion(evento, entidadGuardada.getDetalleEvento(), entidadGuardada.getId());

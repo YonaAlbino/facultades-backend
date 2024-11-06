@@ -2,7 +2,7 @@ package com.example.facultades.enums;
 
 public enum Socket {
     TOPICO_PRINCIPAL("/tema"),
-    TOPICO_PERSONAL("/usuario"),
+    TOPICO_PERSONAL("/tema/usuario"),
     ADMIN_PREFIJO("/tema/admin/notificacion");
 
     private final String ruta;

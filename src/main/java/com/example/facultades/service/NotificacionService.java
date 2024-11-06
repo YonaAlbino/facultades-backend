@@ -4,6 +4,7 @@ import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.dto.NotificacionDTO;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.generics.GenericService;
+import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Notificacion;
 import com.example.facultades.model.Usuario;
 import com.example.facultades.model.UsuarioLeido;
@@ -41,6 +42,9 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
 
     @Autowired
     private IUsuarioLeidoRepository usuarioLeidoRepository;
+
+    @Autowired
+    private IgenericService<UsuarioLeido, Long> usuarioLeidoService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -130,15 +134,57 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
 
     @Override
     public void guardarNotificacionAdmin(Long idEvento, String informacion, Notificacion notificacion) {
-        //Notificacion notificacion = new Notificacion();
-        List<UsuarioLeido> listaLeidos = new ArrayList<>();
-        notificacion.setListaDeusuariosLeidos(listaLeidos);
-        notificacion. setIdRedireccionamiento(idEvento);
-        notificacion.setLeida(false);
-        notificacion.setInformacion(informacion);
-        notificacion.setListaUsuarios(usuRepo.findUserEntityByListaRolesNombreRol("ADMIN"));
+        List<UsuarioLeido> listaLeidos = inicializarListaUsuariosLeidos();
+        List<Usuario> listaUsuarios = obtenerUsuariosAdmin();
+
+        configurarNotificacion(notificacion, idEvento, informacion, listaLeidos, listaUsuarios);
         this.save(notificacion);
     }
+
+    @Override
+    public void guardarNotificacionUsuario(Long idUsuario, Long idEvento, String informacion, Notificacion notificacion) {
+        List<UsuarioLeido> listaLeidos = crearListaUsuariosLeidos(idUsuario);
+        List<Usuario> listaUsuario = obtenerUsuarioPorId(idUsuario);
+
+        configurarNotificacion(notificacion, idEvento, informacion, listaLeidos, listaUsuario);
+        this.save(notificacion);
+    }
+
+
+    private List<UsuarioLeido> inicializarListaUsuariosLeidos() {
+        return new ArrayList<>();
+    }
+
+    private List<Usuario> obtenerUsuariosAdmin() {
+        return usuRepo.findUserEntityByListaRolesNombreRol("ADMIN");
+    }
+
+    private List<UsuarioLeido> crearListaUsuariosLeidos(Long idUsuario) {
+        List<Long> listaIdsUsuariosLeidos = notificacionRepo.filtrarId(idUsuario);
+        List<UsuarioLeido> listaLeidos = new ArrayList<>();
+        for (Long id : listaIdsUsuariosLeidos) {
+            UsuarioLeido usuarioLeido = new UsuarioLeido();
+            usuarioLeido.setIdUsuario(id);
+            listaLeidos.add(usuarioLeidoService.save(usuarioLeido));
+        }
+        return listaLeidos;
+    }
+
+    private List<Usuario> obtenerUsuarioPorId(Long idUsuario) {
+        List<Usuario> listaUsuario = new ArrayList<>();
+        usuRepo.findById(idUsuario).ifPresent(listaUsuario::add);
+        return listaUsuario;
+    }
+
+    private void configurarNotificacion(Notificacion notificacion, Long idEvento, String informacion,
+                                        List<UsuarioLeido> listaLeidos, List<Usuario> listaUsuarios) {
+        notificacion.setListaDeusuariosLeidos(listaLeidos);
+        notificacion.setIdRedireccionamiento(idEvento);
+        notificacion.setLeida(false);
+        notificacion.setInformacion(informacion);
+        notificacion.setListaUsuarios(listaUsuarios);
+    }
+
 
     @Override
     public List<NotificacionDTO> getNotificacionByIdUser(Long idUser) {

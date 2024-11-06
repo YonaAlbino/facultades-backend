@@ -2,6 +2,8 @@ package com.example.facultades.model;
 
 import com.example.facultades.generics.BaseEntity;
 import com.example.facultades.util.INotificable;
+import com.example.facultades.util.InotificarPropietario;
+import com.example.facultades.util.ItipoEntidad;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -16,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class Universidad extends BaseEntity implements INotificable<Universidad> {
+public class Universidad extends BaseEntity implements INotificable<Universidad>, InotificarPropietario<Universidad>, ItipoEntidad {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;*/
@@ -49,5 +51,15 @@ public class Universidad extends BaseEntity implements INotificable<Universidad>
         return getNombre();
     }
 
+    @Override
+    @JsonIgnore
+    public Long retornarPorpietario(Universidad entidad) {
+        return this.usuario.getId();
+    }
 
+    @Override
+    @JsonIgnore
+    public Class<?> obtenerTipoClase() {
+        return Universidad.class;
+    }
 }

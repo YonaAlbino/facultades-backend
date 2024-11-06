@@ -52,7 +52,7 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
     @Override
     public Universidad update(Universidad universidad) {
         if (Utili.verificarInsercionNuevoComentario(universidad, universidadRepository, universidad.getListaComentarios())) {
-            Utili.enviarGuardarNotificacionNuevoComentario(universidad.getListaComentarios(), comentarioService, notificacionService);
+            Utili.enviarGuardarNotificacionNuevoComentario(universidad,universidad.getListaComentarios(), comentarioService, notificacionService);
         }
         this.asociar(universidad);
         return universidadRepository.save(universidad);

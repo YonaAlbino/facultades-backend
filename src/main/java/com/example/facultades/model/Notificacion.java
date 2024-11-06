@@ -26,6 +26,7 @@ public class Notificacion extends BaseEntity {
     private boolean universidad;
     private boolean permiso;
     private boolean respuesta;
+    private boolean publicacionComentada;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "notificaciones_usuarios", joinColumns = @JoinColumn(name = "notificacion_id"),

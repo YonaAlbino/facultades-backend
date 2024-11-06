@@ -11,6 +11,7 @@ import java.util.List;
 public interface INotificacionService {
     public void enviarNotificacionByWebSocket(String topic,DetalleNotificacion detalleNotificacion);
     public void guardarNotificacionAdmin(Long idEvento, String informacion, Notificacion notificacion);
+    public void guardarNotificacionUsuario(Long idUsuario,Long idEvento, String informacion, Notificacion notificacion);
     public List<NotificacionDTO> getNotificacionByIdUser(Long idUser);
     public String eliminarUsuarioNotificacion(Long idNotificacion, Long idUsuario);
     public List<Notificacion> findByLeidaFalse(Long usuarioId);

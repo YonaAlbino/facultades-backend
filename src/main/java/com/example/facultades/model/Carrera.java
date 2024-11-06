@@ -2,6 +2,8 @@ package com.example.facultades.model;
 
 import com.example.facultades.generics.BaseEntity;
 import com.example.facultades.util.INotificable;
+import com.example.facultades.util.InotificarPropietario;
+import com.example.facultades.util.ItipoEntidad;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -15,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class Carrera extends BaseEntity implements INotificable<Carrera> {
+public class Carrera extends BaseEntity implements INotificable<Carrera>, InotificarPropietario<Carrera>, ItipoEntidad {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;*/
@@ -39,5 +41,15 @@ public class Carrera extends BaseEntity implements INotificable<Carrera> {
     @JsonIgnore
     public String getDetalleEvento() {
         return getNombre();
+    }
+
+    @Override
+    public Long retornarPorpietario(Carrera entidad) {
+        return this.universidad.retornarPorpietario(universidad);
+    }
+
+    @Override
+    public Class<?> obtenerTipoClase() {
+        return Carrera.class;
     }
 }
