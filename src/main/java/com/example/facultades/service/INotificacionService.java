@@ -15,7 +15,7 @@ public interface INotificacionService {
     public List<NotificacionDTO> getNotificacionByIdUser(Long idUser);
     public String eliminarUsuarioNotificacion(Long idNotificacion, Long idUsuario);
     public List<Notificacion> findByLeidaFalse(Long usuarioId);
-    List<Notificacion> findNotificacionesNoLeidasPorUsuario(Long userId);
+    List<NotificacionDTO> findNotificacionesNoLeidasPorUsuario(Long userId);
     public String setNotificacionLeidaPorUsuario(Long userId);
     String visualizarNotificacionesByUserID( Long userId);
 }

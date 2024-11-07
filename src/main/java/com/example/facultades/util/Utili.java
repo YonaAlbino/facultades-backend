@@ -7,6 +7,7 @@ import com.example.facultades.generics.BaseEntity;
 import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.*;
 import com.example.facultades.service.INotificacionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Utili {
+
+
 
     //Verifica si se agrego un nuevo comentario a la entidad
     public static  <E extends BaseEntity> Boolean verificarInsercionNuevoComentario(E entidad, IFindComenByEntity servicio, List<Comentario> listaComentarios){
@@ -44,11 +47,16 @@ public class Utili {
     }
 
 
-    public static <E extends BaseEntity & InotificarPropietario<E> & ItipoEntidad> void enviarGuardarNotificacionNuevoComentario(E entidad, List<Comentario> listaComentarios,
+    /*public static <E extends BaseEntity & InotificarPropietario<E> & ItipoEntidad> void enviarGuardarNotificacionNuevoComentario(String nombreEntidad,E entidad, Long idUniversidad, List<Comentario> listaComentarios,
                                                                                                                   IgenericService<Comentario, Long> comentarioService,
                                                                                                                   INotificacionService notificacionService) {
 
         Comentario ultimoComentario = obtenerUltimoComentario(listaComentarios, comentarioService);
+        // Verificar si el último comentario tiene un usuario asignado
+        if (ultimoComentario.getUsuario() == null) {
+            throw new IllegalStateException("El comentario no tiene un usuario asociado");
+        }
+
         DetalleNotificacion detalleNotificacion = crearDetalleNotificacion(ultimoComentario);
 
         // Enviar notificación al administrador
@@ -63,27 +71,30 @@ public class Utili {
             Notificacion notificacion = new Notificacion();
             notificacion.setPublicacionComentada(true);
 
-            if(entidad.obtenerTipoClase() == Universidad.class)
+            if(entidad.obtenerTipoClase() == Universidad.class){
                 notificacion.setUniversidad(true);
+                }
             if(entidad.obtenerTipoClase() == Carrera.class)
                 notificacion.setCarrera(true);
-            
-            enviarNotificacionAlPropietario(idPropietario, ultimoComentario, entidad, notificacionService, notificacion);
+
+            enviarNotificacionAlPropietario(nombreEntidad,idUniversidad,idPropietario, ultimoComentario, entidad, notificacionService, notificacion);
         }
     }
 
-    private static void enviarNotificacionAlPropietario(Long idPropietario, Comentario ultimoComentario, BaseEntity entidad,
+    private static void enviarNotificacionAlPropietario(String nombreEntidad,Long idUniversidad,Long idPropietario, Comentario ultimoComentario, BaseEntity entidad,
                                                         INotificacionService notificacionService, Notificacion notificacion) {
 
+
+
         //Notificacion notificacion = new Notificacion();
-        String mensaje = "Han comentado tu publicación";
+        String mensaje = "Han comentado tu publicación " + "("+nombreEntidad+")";
 
         // Guardar notificación para el propietario
-        notificacionService.guardarNotificacionUsuario(idPropietario, entidad.getId(), mensaje, notificacion);
+        notificacionService.guardarNotificacionUsuario(idPropietario, idUniversidad, mensaje, notificacion);
 
         // Crear el detalle de la notificación para el propietario
         DetalleNotificacion detalleNotificacionUsuario = new DetalleNotificacion(
-                "Han publicado un comentario en tu publicación", ultimoComentario.getMensaje(), entidad.getId());
+                "Han publicado un comentario en tu publicación", ultimoComentario.getMensaje(), idUniversidad);
 
         // Enviar la notificación por WebSocket al propietario
         enviarNotificacionUsuario(detalleNotificacionUsuario, notificacionService, idPropietario);
@@ -120,7 +131,7 @@ public class Utili {
         Notificacion notificacion = new Notificacion();
         notificacion.setComentario(true);
         return notificacion;
-    }
+    }*/
 
 
     public static <E extends BaseEntity & INotificable<E>> void manejarNotificacionAdmin(String evento, E entidadGuardada, INotificacionService notificacionService, Notificacion notificacion){

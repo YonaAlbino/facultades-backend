@@ -33,7 +33,7 @@ public class NotificacionController extends ControllerGeneric<Notificacion, Noti
     }
 
     @GetMapping("/noLeidas/{usuarioId}")
-    public ResponseEntity<List<Notificacion>> getNotificationsNoLeidas(@PathVariable Long usuarioId) {
+    public ResponseEntity<List<NotificacionDTO>> getNotificationsNoLeidas(@PathVariable Long usuarioId) {
         return ResponseEntity.ok(notificacionService.findNotificacionesNoLeidasPorUsuario(usuarioId));
     }
 

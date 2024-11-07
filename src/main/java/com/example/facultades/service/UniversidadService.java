@@ -17,6 +17,7 @@ import com.example.facultades.repository.IUniversidadRepository;
 import com.example.facultades.util.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,10 +50,14 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
     @Autowired
     private ComentarioService comenService;
 
+    @Autowired
+    @Lazy
+    private EnvioNotificacion envioNotificacion;
+
     @Override
     public Universidad update(Universidad universidad) {
         if (Utili.verificarInsercionNuevoComentario(universidad, universidadRepository, universidad.getListaComentarios())) {
-            Utili.enviarGuardarNotificacionNuevoComentario(universidad,universidad.getListaComentarios(), comentarioService, notificacionService);
+            envioNotificacion.enviarGuardarNotificacionNuevoComentario(universidad.getNombre(),universidad, universidad.getId(),universidad.getListaComentarios(), comentarioService, notificacionService);
         }
         this.asociar(universidad);
         return universidadRepository.save(universidad);

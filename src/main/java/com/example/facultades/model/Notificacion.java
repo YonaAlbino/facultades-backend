@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -27,6 +28,7 @@ public class Notificacion extends BaseEntity {
     private boolean permiso;
     private boolean respuesta;
     private boolean publicacionComentada;
+    private Date fecha;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "notificaciones_usuarios", joinColumns = @JoinColumn(name = "notificacion_id"),

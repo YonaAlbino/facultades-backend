@@ -22,6 +22,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,6 +60,7 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
     @Override
     public Notificacion save(Notificacion notificacion) {
         this.asociar(notificacion);
+        notificacion.setFecha(new Date());
         return notificacionRepo.save(notificacion);
     }
 
@@ -214,29 +216,54 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
     }
 
     @Override
-    public List<Notificacion> findNotificacionesNoLeidasPorUsuario(Long userId) {
+    public List<NotificacionDTO> findNotificacionesNoLeidasPorUsuario(Long userId) {
         List<Notificacion> listaNotificaciones = notificacionRepo.findNotificacionesByUsuarioId(userId);
         List<Notificacion> nuevaLista = new ArrayList<>();
 
         for (Notificacion notificacion : listaNotificaciones) {
-            boolean leidaPorUsuario = false;
-
-            if (notificacion.getListaDeusuariosLeidos().isEmpty()) {
+            if (!isNotificacionLeidaPorUsuario(notificacion, userId)) {
                 nuevaLista.add(notificacion);
-            } else {
-                for (UsuarioLeido usuarioLeido : notificacion.getListaDeusuariosLeidos()) {
-                    if (userId.equals(usuarioLeido.getIdUsuario())) {
-                        leidaPorUsuario = true;
-                        break;
-                    }
-                }
-                if (!leidaPorUsuario) {
-                    nuevaLista.add(notificacion);
-                }
             }
         }
+
+        // Convierte la lista de notificaciones a DTO y ordena por fecha
+        List<NotificacionDTO> listaNotificacionesDTO = transformarListaNotificacionesADTO(nuevaLista);
+        return ordenarListaDTOMasReciente(listaNotificacionesDTO);
+    }
+
+    // Método auxiliar para verificar si una notificación ha sido leída por el usuario
+    private boolean isNotificacionLeidaPorUsuario(Notificacion notificacion, Long userId) {
+        for (UsuarioLeido usuarioLeido : notificacion.getListaDeusuariosLeidos()) {
+            if (userId.equals(usuarioLeido.getIdUsuario())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Método para transformar una lista de Notificacion a NotificacionDTO
+    public List<NotificacionDTO> transformarListaNotificacionesADTO(List<Notificacion> listaNotificaciones) {
+        List<NotificacionDTO> listaNotificacionesDTO = new ArrayList<>();
+        for (Notificacion notificacion : listaNotificaciones) {
+            listaNotificacionesDTO.add((NotificacionDTO) convertirDTO(notificacion));
+        }
+        return listaNotificacionesDTO;
+    }
+
+    // Ordena la lista de NotificacionDTO en base a la fecha en orden descendente
+    public List<NotificacionDTO> ordenarListaDTOMasReciente(List<NotificacionDTO> listaNotificacionesDTO) {
+        List<NotificacionDTO> nuevaLista = new ArrayList<>(listaNotificacionesDTO);
+
+        nuevaLista.sort((n1, n2) -> {
+            if (n1.getFecha() == null && n2.getFecha() == null) return 0;
+            if (n1.getFecha() == null) return 1;
+            if (n2.getFecha() == null) return -1;
+            return n1.getFecha().compareTo(n2.getFecha()); // Orden descendente
+        });
+
         return nuevaLista;
     }
+
 
     @Override
     public String setNotificacionLeidaPorUsuario(Long userId) {

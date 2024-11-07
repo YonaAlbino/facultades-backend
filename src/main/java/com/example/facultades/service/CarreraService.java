@@ -18,6 +18,7 @@ import com.example.facultades.repository.ICarreraRepository;
 import com.example.facultades.util.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,10 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
     private ComentarioService comenService;
 
     @Autowired
+    @Lazy
+    private EnvioNotificacion envioNotificacion;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     @Override
@@ -67,8 +72,9 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
 
     @Override
     public Carrera update(Carrera carrera) {
+        Long idUniversidad = carrera.getUniversidad().getId();
         if (Utili.verificarInsercionNuevoComentario(carrera, carreraRepository, carrera.getListaComentarios()))
-            Utili.enviarGuardarNotificacionNuevoComentario(carrera,carrera.getListaComentarios(), comentarioService, notificacionService);
+            envioNotificacion.enviarGuardarNotificacionNuevoComentario(carrera.getNombre(),carrera, idUniversidad,carrera.getListaComentarios(), comentarioService, notificacionService);
         this.asociar(carrera);
         return carreraRepository.save(carrera);
     }

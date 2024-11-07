@@ -3,6 +3,7 @@ package com.example.facultades.dto;
 import com.example.facultades.model.Notificacion;
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 @Getter
 @Setter
@@ -21,6 +22,7 @@ public class NotificacionDTO extends BaseDTO<Notificacion> {
     private boolean permiso;
     private boolean respuesta;
     private boolean publicacionComentada;
+    private Date fecha;
 
     // Representa solo los IDs de los usuarios en la lista
     private List<Long> listaUsuariosIds;
