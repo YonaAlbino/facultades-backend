@@ -18,6 +18,7 @@ public class UsuarioDTO extends BaseDTO<Usuario> {
         private String username;
         private String password;
         private boolean enable;
+        private boolean emailVerified;
         private RefreshTokenDto refreshToken;
         private List<RolDTO> listaRoles;
         private List<UniversidadDTO> listaUniversidad;

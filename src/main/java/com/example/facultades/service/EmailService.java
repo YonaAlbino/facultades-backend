@@ -41,4 +41,27 @@ public class EmailService implements IEmailService{
         }
     }
 
+    @Override
+    public void enviarCorreoVerificacionEmail(String email, String token) {
+        String link = "http://localhost:8080/usuario/verificarEmail/"+token;
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(email);
+            helper.setSubject("Verifica tu email");
+            helper.setText("Haz clic en el siguiente enlace para verificar tu cuenta: " + link);
+
+
+            //Context context = new Context();
+            //context.setVariable("mensaje", email.getMensaje());
+            //String contentHTML = templateEngine.process("email.html", context);
+
+            //helper.setText(contentHTML, true);
+            javaMailSender.send(message);
+        }catch (Exception ex){
+            throw new RuntimeException("error al enviar el correo: " + ex.getMessage(), ex);
+        }
+    }
+
+
 }

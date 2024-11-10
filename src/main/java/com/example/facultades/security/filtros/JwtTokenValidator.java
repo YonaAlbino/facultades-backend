@@ -1,8 +1,6 @@
 package com.example.facultades.security.filtros;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-
 import com.example.facultades.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,9 +20,9 @@ import java.util.Collection;
 
 public class JwtTokenValidator extends OncePerRequestFilter {
 
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-    public JwtTokenValidator(JwtUtil jwtUtil){
+    public JwtTokenValidator(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
@@ -34,33 +31,50 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(jwtToken != null){
-          try{
-              jwtToken = jwtToken.substring(7);
-              DecodedJWT decodedJWT = jwtUtil.validateToken(jwtToken);
-
-              String userName = jwtUtil.extractUsername(decodedJWT);
-              String authoritues = jwtUtil.getSpecifClaim(decodedJWT, "authorities").asString();
-
-              Collection<? extends GrantedAuthority> authoritiList = AuthorityUtils.commaSeparatedStringToAuthorityList(authoritues);
-
-              SecurityContext context = SecurityContextHolder.getContext();
-              Authentication authentication = new UsernamePasswordAuthenticationToken(userName, null, authoritiList);
-              context.setAuthentication(authentication);
-              SecurityContextHolder.setContext(context);
-          }catch (Exception ex) {
-              response.setStatus(HttpStatus.UNAUTHORIZED.value());
-              response.setContentType("application/json");
-              response.setCharacterEncoding("UTF-8");
-              // Crear un objeto de respuesta JSON con el mensaje de error
-              String errorMessage = String.format("{\"error\": \"Unauthorized\", \"message\": \"%s\"}", ex.getMessage());
-              // Escribir el cuerpo de la respuesta
-              response.getWriter().write(errorMessage);
-              System.out.println(ex.getMessage());
-              return; // Detener la ejecución del filtro y no continuar con el chain
-          }
+        String jwtToken = extractToken(request);
+        if (jwtToken != null) {
+            try {
+                DecodedJWT decodedJWT = jwtUtil.validateToken(jwtToken);
+                authenticateUser(decodedJWT);
+            } catch (Exception ex) {
+                handleException(response, ex);
+                return;
+            }
         }
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
+    }
+
+    /**
+     * Extrae el token JWT del encabezado Authorization.
+     */
+    private String extractToken(HttpServletRequest request) {
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        return null;
+    }
+
+    /**
+     * Autentica al usuario basado en el token JWT decodificado.
+     */
+    private void authenticateUser(DecodedJWT decodedJWT) {
+        String username = jwtUtil.extractUsername(decodedJWT);
+        String authorities = jwtUtil.getSpecifClaim(decodedJWT, "authorities").asString();
+        Collection<? extends GrantedAuthority> authorityList = AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorityList);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    /**
+     * Maneja excepciones y envía una respuesta de error al cliente.
+     */
+    private void handleException(HttpServletResponse response, Exception ex) throws IOException {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        String errorMessage = String.format("{\"error\": \"Unauthorized\", \"message\": \"%s\"}", ex.getMessage());
+        response.getWriter().write(errorMessage);
     }
 }

@@ -8,10 +8,7 @@ import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.enums.Socket;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.generics.IgenericService;
-import com.example.facultades.model.Notificacion;
-import com.example.facultades.model.RefreshToken;
-import com.example.facultades.model.Rol;
-import com.example.facultades.model.Usuario;
+import com.example.facultades.model.*;
 import com.example.facultades.repository.IUsuarioRepository;
 
 import com.example.facultades.util.*;
@@ -25,6 +22,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -58,6 +56,11 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private IgenericService<TokenVerificacionEmail, Long> verificacionEmailService;
+
+    @Autowired
+    private IEmailService emailService;
 
     @Override
     public String encriptPassword(String password) {
@@ -103,25 +106,64 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
 
     @Override
     public Usuario save(Usuario usuario) {
+        configurarUsuario(usuario);
+        asociarRoles(usuario);
+        encriptarContrasenia(usuario);
+        Usuario usuarioGuardado = guardarUsuario(usuario);
+        if (usuarioGuardado.getId() != null) {
+            manejarNotificacionCreacion(usuarioGuardado);
+            // Generar y guardar el token de verificación
+            TokenVerificacionEmail verificationToken = generarTokenVerificacion(usuarioGuardado);
+            verificacionEmailService.save(verificationToken);
+
+            // Enviar el correo de verificación
+            enviarCorreoVerificacion(usuarioGuardado, verificationToken);
+        }
+        return usuarioGuardado;
+    }
+
+    private TokenVerificacionEmail generarTokenVerificacion(Usuario usuario) {
+        String token = UUID.randomUUID().toString();
+        TokenVerificacionEmail verificationToken = new TokenVerificacionEmail();
+        verificationToken.setToken(token);
+        verificationToken.setUsuario(usuario);
+        verificationToken.setFechaExpiracion(LocalDateTime.now().plusMinutes(30));
+        return verificationToken;
+    }
+
+    private void enviarCorreoVerificacion(Usuario usuario, TokenVerificacionEmail verificationToken) {
+        // Enviar el correo de verificación con el token
+        emailService.enviarCorreoVerificacionEmail(usuario.getUsername(), verificationToken.getToken());
+    }
+
+    private void configurarUsuario(Usuario usuario) {
+        usuario.setEmailVerified(false);
         usuario.setEnable(true);
         usuario.setAccountNotExpired(true);
         usuario.setAccountNotLocked(true);
         usuario.setCredentialNotExpired(true);
         usuario.setRefreshToken(crearRefreshToken(usuario));
-        usuario.setListaRoles(Arrays.asList(rolService.findRolByName("ADMIN")));
-        this.asociar(usuario);
-        usuario.setPassword(this.encriptPassword(usuario.getPassword()));
-        Usuario usuarioGuardado = usuarioRepo.save(usuario);
-        if(usuarioGuardado.getId() != null){
-            Notificacion notificacion = new Notificacion();
-            notificacion.setUsuario(true);
-            Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_USUARIO.getNotificacion(), usuarioGuardado, notificacionService, notificacion);
-            return usuarioGuardado;
-        }
-        //Manejar caso de que el usuario no se haya guardado
-        return usuarioGuardado;
     }
 
+    private void asociarRoles(Usuario usuario) {
+        usuario.setListaRoles(Arrays.asList(rolService.findRolByName("ADMIN")));
+        this.asociar(usuario);
+    }
+
+    private void encriptarContrasenia(Usuario usuario) {
+        usuario.setPassword(this.encriptPassword(usuario.getPassword()));
+    }
+
+    private Usuario guardarUsuario(Usuario usuario) {
+        return usuarioRepo.save(usuario);
+    }
+
+    private void manejarNotificacionCreacion(Usuario usuarioGuardado) {
+        Notificacion notificacion = new Notificacion();
+        notificacion.setUsuario(true);
+        Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_USUARIO.getNotificacion(), usuarioGuardado, notificacionService, notificacion);
+    }
+//xD
     public RefreshToken crearRefreshToken(Usuario usuario){
         String token = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());
         RefreshToken refreshToken = refreshTokenService.save(new RefreshToken(token));

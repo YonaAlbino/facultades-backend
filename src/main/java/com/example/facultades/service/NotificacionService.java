@@ -187,15 +187,13 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
         notificacion.setListaUsuarios(listaUsuarios);
     }
 
-
+    //es esteeeeee
     @Override
     public List<NotificacionDTO> getNotificacionByIdUser(Long idUser) {
         List<Notificacion> listaNotificaciones = notificacionRepo.findNotificacionesByUsuarioId(idUser);
-        List<NotificacionDTO> listaNotificaionesDTO = new ArrayList<>();
-        for (Notificacion notificacion : listaNotificaciones){
-            listaNotificaionesDTO.add((NotificacionDTO) this.convertirDTO(notificacion));
-        }
-        return listaNotificaionesDTO;
+
+        List<NotificacionDTO> listaNotificacionesDTO = transformarListaNotificacionesADTO(listaNotificaciones);
+        return ordenarListaDTOMasReciente(listaNotificacionesDTO);
     }
 
     @Override
@@ -252,7 +250,9 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
 
     // Ordena la lista de NotificacionDTO en base a la fecha en orden descendente
     public List<NotificacionDTO> ordenarListaDTOMasReciente(List<NotificacionDTO> listaNotificacionesDTO) {
+
         List<NotificacionDTO> nuevaLista = new ArrayList<>(listaNotificacionesDTO);
+
 
         nuevaLista.sort((n1, n2) -> {
             if (n1.getFecha() == null && n2.getFecha() == null) return 0;
@@ -260,7 +260,6 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
             if (n2.getFecha() == null) return -1;
             return n1.getFecha().compareTo(n2.getFecha()); // Orden descendente
         });
-
         return nuevaLista;
     }
 

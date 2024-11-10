@@ -30,6 +30,7 @@ public class Usuario extends BaseEntity implements INotificable<Usuario> {
     private boolean accountNotExpired;
     private boolean accountNotLocked;
     private boolean credentialNotExpired;
+    private boolean emailVerified;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "usuario_id"),

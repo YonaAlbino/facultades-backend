@@ -7,5 +7,6 @@ import jakarta.mail.MessagingException;
 public interface IEmailService {
 
     public void sendMail(EmailDtoContacto email) throws MessagingException;
+    void enviarCorreoVerificacionEmail(String email, String token);
 
 }
