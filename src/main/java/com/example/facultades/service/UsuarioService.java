@@ -71,6 +71,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     @Transactional
     public Usuario saveUserOauth(String email) {
         Usuario usuario = new Usuario();
+        usuario.setEmailVerified(true);
         usuario.setRefreshToken(crearRefreshToken(usuario));
         List<Rol> roleList = new ArrayList<>();
         Rol rolPorDefecto = rolService.findRolByName("ADMIN");
@@ -85,8 +86,8 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         usuario.setUsername(email);
         usuario.setPassword(this.encriptPassword(this.generatedPassword()));
         usuario.setListaRoles(roleList);
-
-        return this.save(usuario);
+        return  usuarioRepo.save(usuario);
+        //return this.save(usuario);
     }
 
     @Override
@@ -133,7 +134,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
 
     private void enviarCorreoVerificacion(Usuario usuario, TokenVerificacionEmail verificationToken) {
         // Enviar el correo de verificación con el token
-        emailService.enviarCorreoVerificacionEmail(usuario.getUsername(), verificationToken.getToken());
+        emailService.enviarCorreoVerificacionEmail(usuario.getUsername(), verificationToken.getToken(), verificationToken.getId());
     }
 
     private void configurarUsuario(Usuario usuario) {

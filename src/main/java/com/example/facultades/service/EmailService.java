@@ -42,8 +42,8 @@ public class EmailService implements IEmailService{
     }
 
     @Override
-    public void enviarCorreoVerificacionEmail(String email, String token) {
-        String link = "http://localhost:8080/usuario/verificarEmail/"+token;
+    public void enviarCorreoVerificacionEmail(String email, String token, Long idTokenVerificador) {
+        String link = "http://localhost:8080/usuario/verificarEmail/"+token+"/"+idTokenVerificador;
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
