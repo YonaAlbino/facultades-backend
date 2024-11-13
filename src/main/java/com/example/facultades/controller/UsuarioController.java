@@ -1,5 +1,7 @@
 package com.example.facultades.controller;
 
+import com.example.facultades.dto.MensajeRetornoSimple;
+import com.example.facultades.dto.RegistroRequest;
 import com.example.facultades.dto.UsuarioDTO;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.generics.IgenericService;
@@ -7,8 +9,11 @@ import com.example.facultades.model.Rol;
 import com.example.facultades.model.TokenVerificacionEmail;
 import com.example.facultades.model.Usuario;
 import com.example.facultades.service.ITokenVerificacionEmailService;
+import com.example.facultades.service.RecaptchaService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,6 +30,25 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
 
     @Autowired
     private IgenericService<Usuario, Long> usuarioService;
+
+    @Autowired
+    private RecaptchaService recaptchaService;
+
+    @PostMapping("/registro")
+    public ResponseEntity<MensajeRetornoSimple> save(@RequestBody RegistroRequest registroRequest){
+
+        boolean isCaptchaValid = recaptchaService.verifyRecaptcha(registroRequest.captchaToken());
+
+        if (!isCaptchaValid) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MensajeRetornoSimple("El captcha token es invalido"));
+        }
+        Usuario usuario = new Usuario();
+        usuario.setUsername(registroRequest.email());
+        usuario.setPassword(registroRequest.contrasenia());
+        usuarioService.save(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new MensajeRetornoSimple("El usuario fue creado"));
+    }
+
 
     @GetMapping("/verificarEmail/{token}/{idTokenVerificador}")
     public void verifyAccount(@PathVariable String token, @PathVariable Long idTokenVerificador, HttpServletResponse response) throws IOException {
