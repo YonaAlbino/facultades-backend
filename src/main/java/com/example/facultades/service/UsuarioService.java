@@ -68,6 +68,11 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     }
 
     @Override
+    public String buscarUsuarioPorNombre(String username){
+        return usuarioRepo.buscarUsuarioPorNombre(username);
+    }
+
+    @Override
     @Transactional
     public Usuario saveUserOauth(String email) {
         Usuario usuario = new Usuario();

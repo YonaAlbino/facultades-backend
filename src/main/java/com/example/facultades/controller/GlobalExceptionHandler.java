@@ -29,6 +29,16 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(UsuarioExistenteException.class)
+    public ResponseEntity<ErrorResponse> elmailEnUso(UsuarioExistenteException ex) {
+
+        ErrorResponse error = ErrorResponse.builder()
+                .mensaje(ex.getMessage())
+                .build();
+        System.out.println(ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(UsuarioNoEncontradoException.class)
     public ResponseEntity<ErrorResponse> usuarioNoEncontradoException(UsuarioNoEncontradoException ex) {
 

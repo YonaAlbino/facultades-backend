@@ -7,6 +7,8 @@ import com.example.facultades.model.Reaccion;
 import com.example.facultades.model.Usuario;
 import com.example.facultades.util.IFindComenByEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,5 +18,6 @@ import java.util.Optional;
 public interface IUsuarioRepository extends IGenericRepository<Usuario, Long> {
     public Optional<Usuario> findUserEntityByusername(String username);
     public List<Usuario> findUserEntityByListaRolesNombreRol(String nombreRol);
-
+    @Query("SELECT u.username FROM Usuario u WHERE u.username = :username")
+    String buscarUsuarioPorNombre(@Param("username")String username);
 }

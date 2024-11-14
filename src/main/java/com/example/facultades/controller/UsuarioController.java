@@ -3,12 +3,14 @@ package com.example.facultades.controller;
 import com.example.facultades.dto.MensajeRetornoSimple;
 import com.example.facultades.dto.RegistroRequest;
 import com.example.facultades.dto.UsuarioDTO;
+import com.example.facultades.excepciones.UsuarioExistenteException;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Rol;
 import com.example.facultades.model.TokenVerificacionEmail;
 import com.example.facultades.model.Usuario;
 import com.example.facultades.service.ITokenVerificacionEmailService;
+import com.example.facultades.service.IUsuarioService;
 import com.example.facultades.service.RecaptchaService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/usuario")
@@ -29,24 +32,33 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
     private ITokenVerificacionEmailService verificacionEmailService;
 
     @Autowired
-    private IgenericService<Usuario, Long> usuarioService;
+    private IgenericService<Usuario, Long> genericUsuarioService;
+
+    @Autowired
+    private IUsuarioService usuarioService;
 
     @Autowired
     private RecaptchaService recaptchaService;
 
     @PostMapping("/registro")
-    public ResponseEntity<MensajeRetornoSimple> save(@RequestBody RegistroRequest registroRequest){
+    public ResponseEntity<MensajeRetornoSimple> save(@RequestBody RegistroRequest registroRequest)  {
 
         boolean isCaptchaValid = recaptchaService.verifyRecaptcha(registroRequest.captchaToken());
 
         if (!isCaptchaValid) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MensajeRetornoSimple("El captcha token es invalido"));
         }
-        Usuario usuario = new Usuario();
-        usuario.setUsername(registroRequest.email());
-        usuario.setPassword(registroRequest.contrasenia());
-        usuarioService.save(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new MensajeRetornoSimple("El usuario fue creado"));
+
+        String usuarioBuscado = usuarioService.buscarUsuarioPorNombre(registroRequest.email());
+        if(usuarioBuscado == null){
+            System.out.println("usuarioBuscado");
+            Usuario usuario = new Usuario();
+            usuario.setUsername(registroRequest.email());
+            usuario.setPassword(registroRequest.contrasenia());
+            genericUsuarioService.save(usuario);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new MensajeRetornoSimple("El usuario fue creado"));
+        }else throw new UsuarioExistenteException();
+
     }
 
 
@@ -71,7 +83,7 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
         // Actualizar estado del usuario
         Usuario usuario = verificationToken.getUsuario();
         usuario.setEmailVerified(true);
-        usuarioService.update(usuario);
+        genericUsuarioService.update(usuario);
 
         // Obtener el rol del usuario
         String role = obtenerRol(usuario);

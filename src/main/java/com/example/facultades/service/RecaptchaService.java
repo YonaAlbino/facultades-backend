@@ -17,7 +17,6 @@ public class RecaptchaService {
     public boolean verifyRecaptcha(String token) {
         // Construir la URL para hacer la solicitud a la API de Google
         String url = RECAPTCHA_VERIFY_URL+"?secret="+secretKey+"&response="+token;
-        // Usamos RestTemplate para hacer la solicitud POST a la API de Google
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<RecaptchaResponse> response = restTemplate.postForEntity(url, null, RecaptchaResponse.class);
 

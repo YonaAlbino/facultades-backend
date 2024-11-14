@@ -12,5 +12,5 @@ public interface IUsuarioService {
     public Usuario saveUserOauth(String email);
     public  Optional<Usuario> findUserEntityByusername(String username);
     List<Usuario> getUsuarioListByRole(String nombreRol);
-
+    public String buscarUsuarioPorNombre(String username);
 }
