@@ -26,6 +26,7 @@ public class UsuarioDTO extends BaseDTO<Usuario> {
         private List<ComentarioDTO> listaComentarios;
         private List<RespuestaDTO> listaRespuesta;
         private List<ReaccionDTO> listaReaccion;
+        private Long TokenRecuperacionContraseniaId;
 
 
 }

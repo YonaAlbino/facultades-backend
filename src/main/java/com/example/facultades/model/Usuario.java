@@ -2,10 +2,7 @@ package com.example.facultades.model;
 
 import com.example.facultades.generics.BaseEntity;
 import com.example.facultades.util.INotificable;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
@@ -59,6 +56,11 @@ public class Usuario extends BaseEntity implements INotificable<Usuario> {
     @OneToMany()
     @JsonManagedReference(value = "usuario-reaccion")
     private List<Reaccion> listaReaccion;
+
+    @OneToOne(mappedBy = "usuario") // No es el dueño de la relación
+    @JsonBackReference(value = "tokenRecuperacionContrasenia-usuario")
+    private TokenRecuperacionContrasenia tokenRecuperacionContrasenia;
+
 
 
     @Override

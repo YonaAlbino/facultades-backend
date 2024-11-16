@@ -18,10 +18,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/tokenVerificacionEmail")
 public class TokenVerificacionEmailController extends ControllerGeneric<TokenVerificacionEmail, TokenVerificacionEmailDTO, Long> {
-
     @Autowired
     private ITokenVerificacionEmailService verificacionEmailService;
-
 
     @GetMapping("/actualizarToken/{id}")
     public ResponseEntity<MensajeRetornoSimple> actualizarTokenVerificacion(@PathVariable Long id) {

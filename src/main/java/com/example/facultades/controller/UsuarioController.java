@@ -4,11 +4,13 @@ import com.example.facultades.dto.MensajeRetornoSimple;
 import com.example.facultades.dto.RegistroRequest;
 import com.example.facultades.dto.UsuarioDTO;
 import com.example.facultades.excepciones.UsuarioExistenteException;
+import com.example.facultades.excepciones.UsuarioNoEncontradoException;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Rol;
 import com.example.facultades.model.TokenVerificacionEmail;
 import com.example.facultades.model.Usuario;
+import com.example.facultades.service.IEmailService;
 import com.example.facultades.service.ITokenVerificacionEmailService;
 import com.example.facultades.service.IUsuarioService;
 import com.example.facultades.service.RecaptchaService;
@@ -31,11 +33,14 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
     @Autowired
     private ITokenVerificacionEmailService verificacionEmailService;
 
+
     @Autowired
     private IgenericService<Usuario, Long> genericUsuarioService;
 
+
     @Autowired
     private IUsuarioService usuarioService;
+
 
     @Autowired
     private RecaptchaService recaptchaService;
@@ -51,7 +56,6 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
 
         String usuarioBuscado = usuarioService.buscarUsuarioPorNombre(registroRequest.email());
         if(usuarioBuscado == null){
-            System.out.println("usuarioBuscado");
             Usuario usuario = new Usuario();
             usuario.setUsername(registroRequest.email());
             usuario.setPassword(registroRequest.contrasenia());
@@ -68,14 +72,12 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
 
         if (verificationToken == null) {
             // Token no encontrado
-            System.out.println("Token no encontrado para el idTokenVerificador: " + idTokenVerificador);
             redirectWithError(response, idTokenVerificador);
             return;
         }
 
         if (verificationToken.getFechaExpiracion().isBefore(LocalDateTime.now())) {
             // Token expirado
-            System.out.println("El token ha expirado para el idTokenVerificador: " + idTokenVerificador);
             redirectWithError(response, idTokenVerificador);
             return;
         }
@@ -94,7 +96,6 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
 
         // Construir URL de redirección
         String redirectUrl = "http://localhost:4200/?token=" + token2 + "&role=" + role + "&idUsuario=" + idUsuario;
-        System.out.println("Redirigiendo a: " + redirectUrl);
 
         // Redirigir a la URL de destino
         response.setStatus(HttpServletResponse.SC_FOUND);
@@ -115,6 +116,6 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
     // Método para redirigir con error
     private void redirectWithError(HttpServletResponse response, Long idTokenVerificador) throws IOException {
         response.setStatus(HttpServletResponse.SC_FOUND);
-        response.setHeader("Location", "http://localhost:4200/error/token/" + idTokenVerificador);
+        response.setHeader("Location", "http://localhost:4200/error/token/" + idTokenVerificador + "?email=" + true + "&contrasenia=" + false);
     }
 }

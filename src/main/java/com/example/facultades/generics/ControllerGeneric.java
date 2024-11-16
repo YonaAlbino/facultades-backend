@@ -18,7 +18,6 @@ public class ControllerGeneric <E extends BaseEntity, D extends BaseDTO<E> ,ID e
     @GetMapping
     public ResponseEntity<List<D>> getAll(){
         List<E> entidades =  genericService.getAll();
-        System.out.println("pepepe");
         if (entidades == null || entidades.isEmpty()) {
             return ResponseEntity.noContent().build();
         }

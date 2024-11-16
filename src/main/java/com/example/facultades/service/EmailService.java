@@ -51,12 +51,38 @@ public class EmailService implements IEmailService{
             helper.setSubject("Verifica tu email");
             helper.setText("Haz clic en el siguiente enlace para verificar tu cuenta: " + link);
 
+            javaMailSender.send(message);
+        }catch (Exception ex){
+            throw new RuntimeException("error al enviar el correo: " + ex.getMessage(), ex);
+        }
+    }
 
-            //Context context = new Context();
-            //context.setVariable("mensaje", email.getMensaje());
-            //String contentHTML = templateEngine.process("email.html", context);
+    @Override
+    public void enviarCorreoRecuperacionContrasena(String email, String token, Long idTokenVerificador) {
+        String link = "http://localhost:8080/TokenRecuperacionContrasenia/reestablecerContrasenia/"+token+"/"+idTokenVerificador;
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(email);
+            helper.setSubject("Reestablecer contraseña");
+            helper.setText("Haz clic en el siguiente enlace para reestablecer tu contraseña: " + link);
 
-            //helper.setText(contentHTML, true);
+            javaMailSender.send(message);
+            System.out.println(link);
+        }catch (Exception ex){
+            throw new RuntimeException("error al enviar el correo: " + ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    public void enviarEmailContraseniaRecuperada(String emailDestinatario, String nuevacContrasenia) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(emailDestinatario);
+            helper.setSubject("Se ha restablecido tu contraseña");
+            helper.setText("Tu nueva contraseña es : " + nuevacContrasenia);
+
             javaMailSender.send(message);
         }catch (Exception ex){
             throw new RuntimeException("error al enviar el correo: " + ex.getMessage(), ex);

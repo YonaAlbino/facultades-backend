@@ -76,6 +76,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     @Transactional
     public Usuario saveUserOauth(String email) {
         Usuario usuario = new Usuario();
+        usuario.setUsername(email);
         usuario.setEmailVerified(true);
         usuario.setRefreshToken(crearRefreshToken(usuario));
         List<Rol> roleList = new ArrayList<>();
@@ -128,7 +129,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         return usuarioGuardado;
     }
 
-    private TokenVerificacionEmail generarTokenVerificacion(Usuario usuario) {
+    public TokenVerificacionEmail generarTokenVerificacion(Usuario usuario) {
         String token = UUID.randomUUID().toString();
         TokenVerificacionEmail verificationToken = new TokenVerificacionEmail();
         verificationToken.setToken(token);
@@ -155,8 +156,8 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         usuario.setListaRoles(Arrays.asList(rolService.findRolByName("ADMIN")));
         this.asociar(usuario);
     }
-
-    private void encriptarContrasenia(Usuario usuario) {
+    @Override
+    public void encriptarContrasenia(Usuario usuario) {
         usuario.setPassword(this.encriptPassword(usuario.getPassword()));
     }
 
@@ -171,6 +172,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     }
 //xD
     public RefreshToken crearRefreshToken(Usuario usuario){
+
         String token = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());
         RefreshToken refreshToken = refreshTokenService.save(new RefreshToken(token));
         return refreshTokenService.save(refreshToken);

@@ -2,6 +2,7 @@ package com.example.facultades.service;
 
 
 
+import com.example.facultades.model.TokenVerificacionEmail;
 import com.example.facultades.model.Usuario;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface IUsuarioService {
     public  Optional<Usuario> findUserEntityByusername(String username);
     List<Usuario> getUsuarioListByRole(String nombreRol);
     public String buscarUsuarioPorNombre(String username);
+    public TokenVerificacionEmail generarTokenVerificacion(Usuario usuario);
+    public void encriptarContrasenia(Usuario usuario);
 }
