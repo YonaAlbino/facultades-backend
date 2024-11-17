@@ -6,6 +6,7 @@ import com.example.facultades.enums.DuracionToken;
 import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.enums.Socket;
+import com.example.facultades.excepciones.UsuarioNoEncontradoException;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.*;
@@ -159,6 +160,16 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     @Override
     public void encriptarContrasenia(Usuario usuario) {
         usuario.setPassword(this.encriptPassword(usuario.getPassword()));
+    }
+
+    @Override
+    public void cambiarContrasenia(Long idUsuario, String contrasenia) {
+        Optional<Usuario> usuarioOptional = usuarioRepo.findById(idUsuario);
+        if(usuarioOptional.isEmpty())
+            throw  new UsuarioNoEncontradoException();
+        Usuario usuario = usuarioOptional.get();
+        usuario.setPassword(this.encriptPassword(contrasenia));
+        usuarioRepo.save(usuario);
     }
 
     private Usuario guardarUsuario(Usuario usuario) {

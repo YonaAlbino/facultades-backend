@@ -23,6 +23,7 @@ public class Usuario extends BaseEntity implements INotificable<Usuario> {
     private Long idUsuario;*/
     private String username;
     private String password;
+    private String imagen;
     private boolean enable;
     private boolean accountNotExpired;
     private boolean accountNotLocked;

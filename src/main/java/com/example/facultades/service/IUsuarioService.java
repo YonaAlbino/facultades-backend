@@ -16,4 +16,6 @@ public interface IUsuarioService {
     public String buscarUsuarioPorNombre(String username);
     public TokenVerificacionEmail generarTokenVerificacion(Usuario usuario);
     public void encriptarContrasenia(Usuario usuario);
+
+    void cambiarContrasenia(Long idUsuario, String contrasenia);
 }

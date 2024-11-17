@@ -33,17 +33,20 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
     @Autowired
     private ITokenVerificacionEmailService verificacionEmailService;
 
-
     @Autowired
     private IgenericService<Usuario, Long> genericUsuarioService;
-
 
     @Autowired
     private IUsuarioService usuarioService;
 
-
     @Autowired
     private RecaptchaService recaptchaService;
+
+    @PostMapping("/cambiarContrasenia")
+    public ResponseEntity<MensajeRetornoSimple> cambiarContrasenia(@RequestParam Long idUsuario, @RequestParam String contrasenia){
+        usuarioService.cambiarContrasenia(idUsuario, contrasenia);
+        return ResponseEntity.ok(new MensajeRetornoSimple("Contraseña actualizada exitosamente"));
+    }
 
     @PostMapping("/registro")
     public ResponseEntity<MensajeRetornoSimple> save(@RequestBody RegistroRequest registroRequest)  {

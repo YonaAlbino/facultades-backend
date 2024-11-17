@@ -108,7 +108,7 @@ public class TokenRecuperacionContraseniaController  extends ControllerGeneric<T
 
 
         // Construir URL de redirección
-        String redirectUrl = "http://localhost:4200/perfil?token=" + nuevoAccesToken + "&role=" + role + "&idUsuario=" + idUsuario;
+        String redirectUrl = "http://localhost:4200/reestablecerContrasenia?token=" + nuevoAccesToken + "&role=" + role + "&idUsuario=" + idUsuario;
         // System.out.println("Redirigiendo a: " + redirectUrl);
 
         // Redirigir a la URL de destino
