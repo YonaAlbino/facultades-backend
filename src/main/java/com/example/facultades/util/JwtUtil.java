@@ -33,7 +33,7 @@ public class JwtUtil {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        System.out.println(new Date(System.currentTimeMillis() + (milisegundos)));
+
 
         String jwtToken = JWT.create()
                 .withIssuer(this.userGenerator)
@@ -49,14 +49,7 @@ public class JwtUtil {
 
     public String createRefreshToken(String nombreUsuario, long milisegundos) {
         Algorithm algorithm = Algorithm.HMAC256(privateKey);
-        //String username = authentication.getPrincipal().toString();
 
-        /*String authorities = authentication.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));*/
-
-        System.out.println(new Date(System.currentTimeMillis() + (milisegundos)));
 
         String jwtToken = JWT.create()
                 .withIssuer(this.userGenerator)
@@ -72,6 +65,7 @@ public class JwtUtil {
 
 
     public DecodedJWT validateToken(String token) {
+
         try {
             Algorithm algorithm = Algorithm.HMAC256(privateKey);
             JWTVerifier verifier = JWT.require(algorithm)

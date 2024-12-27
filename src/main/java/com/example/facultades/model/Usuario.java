@@ -24,6 +24,8 @@ public class Usuario extends BaseEntity implements INotificable<Usuario> {
     private String username;
     private String password;
     private String imagen;
+    private int infracciones;
+    private boolean baneada;
     private boolean enable;
     private boolean accountNotExpired;
     private boolean accountNotLocked;
@@ -61,8 +63,6 @@ public class Usuario extends BaseEntity implements INotificable<Usuario> {
     @OneToOne(mappedBy = "usuario") // No es el dueño de la relación
     @JsonBackReference(value = "tokenRecuperacionContrasenia-usuario")
     private TokenRecuperacionContrasenia tokenRecuperacionContrasenia;
-
-
 
     @Override
     @JsonIgnore

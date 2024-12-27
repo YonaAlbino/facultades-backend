@@ -87,4 +87,9 @@ public class TokenRecuperacionContraseniaService extends GenericService<TokenRec
         tokenRecuperacionContrasenia.setFechaExpiracion(LocalDateTime.now().plusMinutes(30));
        return tokenRepository.save(tokenRecuperacionContrasenia);
     }
+
+    @Override
+    public TokenRecuperacionContrasenia findTokenRCbyUsuarioId(Long usuarioId){
+        return tokenRepository.findTokenRCbyUsuarioId(usuarioId);
+    }
 }

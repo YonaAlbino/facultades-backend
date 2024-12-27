@@ -1,5 +1,6 @@
 package com.example.facultades.controller;
 
+import com.example.facultades.dto.ActualizarContraseniaRequest;
 import com.example.facultades.dto.MensajeRetornoSimple;
 import com.example.facultades.dto.RegistroRequest;
 import com.example.facultades.dto.UsuarioDTO;
@@ -42,11 +43,20 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
     @Autowired
     private RecaptchaService recaptchaService;
 
+
+
     @PostMapping("/cambiarContrasenia")
-    public ResponseEntity<MensajeRetornoSimple> cambiarContrasenia(@RequestParam Long idUsuario, @RequestParam String contrasenia){
-        usuarioService.cambiarContrasenia(idUsuario, contrasenia);
+    public ResponseEntity<MensajeRetornoSimple> cambiarContrasenia(@RequestParam Long idUsuario, @RequestParam String nuevaContrasena) throws Exception {
+        usuarioService.cambiarContrasenia(idUsuario, nuevaContrasena);
         return ResponseEntity.ok(new MensajeRetornoSimple("Contraseña actualizada exitosamente"));
     }
+
+    @PostMapping("/actualizarContrasenia")
+    public ResponseEntity<MensajeRetornoSimple> actualizarContrasenia(@RequestBody ActualizarContraseniaRequest actualizarContraseniaRequest){
+        usuarioService.actualizarContrasenia(actualizarContraseniaRequest.idUsuario(), actualizarContraseniaRequest.nuevaContrasenia(), actualizarContraseniaRequest.contraseniaActual());
+        return ResponseEntity.ok(new MensajeRetornoSimple("Contraseña actualizada exitosamente"));
+    }
+
 
     @PostMapping("/registro")
     public ResponseEntity<MensajeRetornoSimple> save(@RequestBody RegistroRequest registroRequest)  {
@@ -66,6 +76,12 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
             return ResponseEntity.status(HttpStatus.CREATED).body(new MensajeRetornoSimple("El usuario fue creado"));
         }else throw new UsuarioExistenteException();
 
+    }
+
+    @PostMapping("/infraccionar/{id}")
+    public ResponseEntity<MensajeRetornoSimple> infraccionarUsuario(@PathVariable Long id){
+        usuarioService.infraccionarUsuario(id);
+        return ResponseEntity.ok(new MensajeRetornoSimple("Usuario infraccionado con exito"));
     }
 
 

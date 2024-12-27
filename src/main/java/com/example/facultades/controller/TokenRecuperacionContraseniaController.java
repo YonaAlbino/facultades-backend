@@ -69,7 +69,6 @@ public class TokenRecuperacionContraseniaController  extends ControllerGeneric<T
         TokenRecuperacionContrasenia tokenRecuperacionContrasenia = null;
         if(usuario.get().getTokenRecuperacionContrasenia() != null){
             tokenRecuperacionContrasenia = tokenRecuperacionContraseniaService.actualizarToken(usuario.get().getTokenRecuperacionContrasenia());
-            System.out.println("se actualizo");
         }else{
             tokenRecuperacionContrasenia = tokenRecuperacionContraseniaService.generarTokenVerificacion(usuario.get());
 

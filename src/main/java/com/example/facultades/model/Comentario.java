@@ -24,7 +24,7 @@ public class Comentario extends BaseEntity  implements INotificable<Comentario> 
     @Column(length = 1000) // Por ejemplo, aquí estamos especificando una longitud máxima de 1000 caracteres
     private String mensaje;
     private boolean editado;
-
+    private boolean eliminado;
     @OneToMany()
     private List<Reaccion> listaReaccion;
 

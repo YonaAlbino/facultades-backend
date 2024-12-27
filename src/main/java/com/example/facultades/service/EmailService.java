@@ -42,6 +42,20 @@ public class EmailService implements IEmailService{
     }
 
     @Override
+    public void enviarEmail(String emailDestinatario, String asunto, String mensaje)  {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(emailDestinatario);
+            helper.setSubject(asunto);
+            helper.setText(mensaje);
+            javaMailSender.send(message);
+        }catch (Exception ex){
+            throw new RuntimeException("error al enviar el correo: " + ex.getMessage(), ex);
+        }
+    }
+
+    @Override
     public void enviarCorreoVerificacionEmail(String email, String token, Long idTokenVerificador) {
         String link = "http://localhost:8080/usuario/verificarEmail/"+token+"/"+idTokenVerificador;
         try {
@@ -68,7 +82,6 @@ public class EmailService implements IEmailService{
             helper.setText("Haz clic en el siguiente enlace para reestablecer tu contraseña: " + link);
 
             javaMailSender.send(message);
-            System.out.println(link);
         }catch (Exception ex){
             throw new RuntimeException("error al enviar el correo: " + ex.getMessage(), ex);
         }

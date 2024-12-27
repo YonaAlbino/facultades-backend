@@ -9,6 +9,7 @@ public interface ITokenRecuperacionContraseniaService {
     void actualizarYEnviarToken(Long id);
     public TokenRecuperacionContrasenia generarTokenVerificacion(Usuario usuario);
     public  TokenRecuperacionContrasenia actualizarToken(TokenRecuperacionContrasenia tokenRecuperacionContrasenia);
+    public TokenRecuperacionContrasenia findTokenRCbyUsuarioId(Long usuarioId);
 }
 
 

@@ -6,4 +6,8 @@ public class UsuarioNoEncontradoException extends RuntimeException{
         super("El usuario que ingresaste no exite en la base de datos");
     }
 
+    public UsuarioNoEncontradoException(String mensaje){
+        super(mensaje);
+    }
+
 }

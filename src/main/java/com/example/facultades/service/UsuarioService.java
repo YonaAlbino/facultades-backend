@@ -1,11 +1,13 @@
 package com.example.facultades.service;
 
 import com.example.facultades.dto.BaseDTO;
+import com.example.facultades.dto.MensajeRetornoSimple;
 import com.example.facultades.dto.UsuarioDTO;
 import com.example.facultades.enums.DuracionToken;
 import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.enums.Socket;
+import com.example.facultades.excepciones.ContraseniaIncorrectaException;
 import com.example.facultades.excepciones.UsuarioNoEncontradoException;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.generics.IgenericService;
@@ -21,6 +23,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -62,6 +65,13 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
 
     @Autowired
     private IEmailService emailService;
+
+    @Autowired
+    private IgenericService<TokenRecuperacionContrasenia, Long> tokenRecuperacionContraseniaService;
+
+    @Autowired
+    @Lazy
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public String encriptPassword(String password) {
@@ -157,20 +167,62 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         usuario.setListaRoles(Arrays.asList(rolService.findRolByName("ADMIN")));
         this.asociar(usuario);
     }
+
     @Override
     public void encriptarContrasenia(Usuario usuario) {
         usuario.setPassword(this.encriptPassword(usuario.getPassword()));
     }
 
     @Override
-    public void cambiarContrasenia(Long idUsuario, String contrasenia) {
-        Optional<Usuario> usuarioOptional = usuarioRepo.findById(idUsuario);
-        if(usuarioOptional.isEmpty())
-            throw  new UsuarioNoEncontradoException();
-        Usuario usuario = usuarioOptional.get();
-        usuario.setPassword(this.encriptPassword(contrasenia));
+    public void infraccionarUsuario(Long idUsuario) {
+        Optional<Usuario> usuarioBuscado = this.findById(idUsuario);
+        if (usuarioBuscado.isPresent()) {
+            Usuario usuario = usuarioBuscado.get();
+            if(usuario.getInfracciones() <= 3){
+                // Incrementar las infracciones
+                usuario.setInfracciones(usuario.getInfracciones() + 1);
+                emailService.enviarEmail(usuario.getUsername(),"Infracción", "Tu cuenta ha recibido una infracción por romper las normas de nuestra app. Tienes un total de  " + usuario.getInfracciones() + " infracciones, puedes acumular un máximo de 3");
+            }
+            // Si el usuario ha superado las 3 infracciones, bloquear la cuenta
+            if (usuario.getInfracciones() > 3) {
+                emailService.enviarEmail(usuario.getUsername(),"Baneo", "Tu cuenta ha sido baneada por romper las normas de nuestra app");
+                usuario.setBaneada(true);
+            }
+            usuarioRepo.save(usuario);
+        } else {
+            throw new UsuarioNoEncontradoException("El usuario con ID " + idUsuario + " no fue encontrado.");
+        }
+    }
+
+
+    @Override
+    public void cambiarContrasenia(Long idUsuario, String nuevaContrasenia) throws Exception {
+        // Buscar al usuario por ID
+        Usuario usuario = usuarioRepo.findById(idUsuario)
+                .orElseThrow(() -> new UsuarioNoEncontradoException());
+
+        // Actualizar la contraseña con la nueva, encriptada
+        usuario.setPassword(this.encriptPassword(nuevaContrasenia));
         usuarioRepo.save(usuario);
     }
+
+    @Override
+    public void actualizarContrasenia(Long idUsuario, String nuevaContrasenia, String contraseniaActual) {
+        // Buscar al usuario por su ID
+        Usuario usuario = usuarioRepo.findById(idUsuario)
+                .orElseThrow(() -> new UsuarioNoEncontradoException("El usuario con ID " + idUsuario + " no fue encontrado"));
+
+        // Verificar si la contraseña actual proporcionada es válida
+        System.out.println(idUsuario + " " + nuevaContrasenia + " "+ contraseniaActual);
+        if (!passwordEncoder.matches(contraseniaActual, usuario.getPassword())) {
+            throw new ContraseniaIncorrectaException();
+        }
+
+        // Codificar la nueva contraseña y actualizarla en el usuario
+        usuario.setPassword(passwordEncoder.encode(nuevaContrasenia));
+        usuarioRepo.save(usuario); // Guardar los cambios en la base de datos
+    }
+
 
     private Usuario guardarUsuario(Usuario usuario) {
         return usuarioRepo.save(usuario);
@@ -184,7 +236,8 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
 //xD
     public RefreshToken crearRefreshToken(Usuario usuario){
 
-        String token = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());
+       // String token = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());
+        String token = jwtUtil.createRefreshToken(usuario.getUsername(), 2*60000);
         RefreshToken refreshToken = refreshTokenService.save(new RefreshToken(token));
         return refreshTokenService.save(refreshToken);
     }
@@ -204,6 +257,9 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     @Override
     public Usuario converirEntidad(BaseDTO<Usuario> DTO) {
         Usuario usuario = modelMapper.map(DTO, Usuario.class);
+        //TokenRecuperacionContrasenia token = tokenRecuperacionContraseniaService.findById(usuario.getTokenRecuperacionContrasenia().getId())
+               // .orElseThrow(() -> new RuntimeException("Token no encontrado"));
+        //usuario.setTokenRecuperacionContrasenia(token);
         return usuario;
     }
 
@@ -216,5 +272,6 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         usuario.setListaComentarios(asociarEntidades.relacionar(usuario.getListaComentarios(),repositoryFactory.generarRepositorio(NombreRepositorio.COMENTARIO.getRepoName())));
         usuario.setListaUniversidad(asociarEntidades.relacionar(usuario.getListaUniversidad(), repositoryFactory.generarRepositorio(NombreRepositorio.UNIVERSIDAD.getRepoName())));
     }
+
 
 }

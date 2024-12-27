@@ -1,6 +1,7 @@
 package com.example.facultades.security;
 
 
+import com.example.facultades.service.IUsuarioService;
 import com.example.facultades.util.JwtUtil;
 import com.example.facultades.security.filtros.JwtTokenValidator;
 import com.example.facultades.service.CustomAuthenticationSuccessHandler;
@@ -29,6 +30,12 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class SecurityConfig {
 
     @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private IUsuarioService usuarioService;
+
+    @Autowired
     private CustomOidcUserService customOidcUserService;
 
     @Autowired
@@ -39,7 +46,7 @@ public class SecurityConfig {
         return httpSecurity
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .csrf(csrf -> csrf.disable())
-                .addFilterBefore(new JwtTokenValidator(jwtUtil), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenValidator(jwtUtil, usuarioService), BasicAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.oidcUserService(customOidcUserService))
@@ -65,6 +72,5 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Autowired
-    private JwtUtil jwtUtil;
+
 }

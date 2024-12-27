@@ -18,6 +18,8 @@ public class UsuarioDTO extends BaseDTO<Usuario> {
         private String username;
         private String password;
         private String imagen;
+        private int infracciones;
+        private boolean baneada;
         private boolean enable;
         private boolean emailVerified;
         private RefreshTokenDto refreshToken;

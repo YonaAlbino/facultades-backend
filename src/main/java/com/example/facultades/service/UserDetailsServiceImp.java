@@ -10,6 +10,7 @@ import com.example.facultades.model.Usuario;
 import com.example.facultades.repository.IUsuarioRepository;
 import com.example.facultades.util.Utili;
 import jdk.jshell.execution.Util;
+import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -55,7 +56,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
 
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
 
-        System.out.println(usuario.getListaRoles().size());
+
         usuario.getListaRoles()
                 .stream()
                 .forEach(roles -> authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(roles.getNombreRol()))));
@@ -103,6 +104,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
 
         Authentication authentication = this.authenticate(username, password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
 
         Usuario usuario = usuarioRepo.findUserEntityByusername((String) authentication.getPrincipal()).get();
         String role = Utili.obtenerRol(authentication);
