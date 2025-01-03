@@ -1,9 +1,6 @@
 package com.example.facultades.controller;
 
-import com.example.facultades.dto.ActualizarContraseniaRequest;
-import com.example.facultades.dto.MensajeRetornoSimple;
-import com.example.facultades.dto.RegistroRequest;
-import com.example.facultades.dto.UsuarioDTO;
+import com.example.facultades.dto.*;
 import com.example.facultades.excepciones.UsuarioExistenteException;
 import com.example.facultades.excepciones.UsuarioNoEncontradoException;
 import com.example.facultades.generics.ControllerGeneric;
@@ -18,6 +15,7 @@ import com.example.facultades.service.RecaptchaService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -121,6 +119,13 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
         response.setHeader("Location", redirectUrl);
     }
 
+    @GetMapping("/buscar-imagen-user/{id}")
+    public ResponseEntity<ImagenUsuario> buscarImagenPorIdUser(@PathVariable Long id){
+        ImagenUsuario imagenUsuario = new ImagenUsuario(usuarioService.buscarImagenPorIdUser(id));
+        return ResponseEntity.ok(imagenUsuario);
+    }
+
+
     // Método auxiliar para obtener el rol del usuario
     private String obtenerRol(Usuario usuario) {
         List<Rol> roles = usuario.getListaRoles();
@@ -137,4 +142,6 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", "http://localhost:4200/error/token/" + idTokenVerificador + "?email=" + true + "&contrasenia=" + false);
     }
+
+
 }

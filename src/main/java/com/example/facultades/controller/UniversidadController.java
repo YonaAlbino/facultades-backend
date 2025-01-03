@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.sound.sampled.Control;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,14 +40,19 @@ public class UniversidadController extends ControllerGeneric<Universidad, Univer
     }
 
     @GetMapping("/paginadas")
-    public ResponseEntity<List<Universidad>>  obtenerUniversidadesPaginadas(
+    public ResponseEntity<List<UniversidadDTO>>  obtenerUniversidadesPaginadas(
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue =  "10") int tamanio)
     {
+        List<UniversidadDTO> listaUniversidadDTO = new ArrayList<>();
         Pageable pageable = PageRequest.of(pagina, tamanio);
         Page<Universidad> universidades = universidadService.obtenerUniversidadesPaginadas(pageable);
         List<Universidad> listaUniversidades = universidades.getContent();
-        return new ResponseEntity<>(listaUniversidades, HttpStatus.OK);
+
+        for (Universidad universidad:listaUniversidades){
+            listaUniversidadDTO.add((UniversidadDTO) IuniversidadGenericService.convertirDTO(universidad));
+        }
+        return new ResponseEntity<>(listaUniversidadDTO, HttpStatus.OK);
     }
 
     @GetMapping("/universidadID/{idCarrera}")

@@ -223,6 +223,11 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         usuarioRepo.save(usuario); // Guardar los cambios en la base de datos
     }
 
+    @Override
+    public String buscarImagenPorIdUser(Long id) {
+        return usuarioRepo.buscarImagenPorIdUser(id);
+    }
+
 
     private Usuario guardarUsuario(Usuario usuario) {
         return usuarioRepo.save(usuario);
@@ -257,9 +262,11 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     @Override
     public Usuario converirEntidad(BaseDTO<Usuario> DTO) {
         Usuario usuario = modelMapper.map(DTO, Usuario.class);
+        System.out.println("rojelio");
         //TokenRecuperacionContrasenia token = tokenRecuperacionContraseniaService.findById(usuario.getTokenRecuperacionContrasenia().getId())
-               // .orElseThrow(() -> new RuntimeException("Token no encontrado"));
+                //.orElseThrow(() -> new RuntimeException("Token no encontrado"));
         //usuario.setTokenRecuperacionContrasenia(token);
+        System.out.println(usuario.getTokenRecuperacionContrasenia());
         return usuario;
     }
 
@@ -272,6 +279,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         usuario.setListaComentarios(asociarEntidades.relacionar(usuario.getListaComentarios(),repositoryFactory.generarRepositorio(NombreRepositorio.COMENTARIO.getRepoName())));
         usuario.setListaUniversidad(asociarEntidades.relacionar(usuario.getListaUniversidad(), repositoryFactory.generarRepositorio(NombreRepositorio.UNIVERSIDAD.getRepoName())));
     }
+
 
 
 }

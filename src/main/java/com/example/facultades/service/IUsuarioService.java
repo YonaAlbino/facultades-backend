@@ -20,4 +20,5 @@ public interface IUsuarioService {
     public void infraccionarUsuario(Long idUsuario);
     void cambiarContrasenia(Long idUsuario, String contrasenia) throws Exception;
     public void actualizarContrasenia(Long idUsuario, String nuevaContrasenia, String contraseniaActual);
+    public  String buscarImagenPorIdUser(Long id);
 }
