@@ -228,6 +228,13 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         return usuarioRepo.buscarImagenPorIdUser(id);
     }
 
+    @Override
+    public MensajeRetornoSimple findUsernamesByUniversidadId(Long universidadId) {
+        //List<String> userNames =  usuarioRepo.findUsernamesByUniversidadId(universidadId);
+        MensajeRetornoSimple retornoSimple = new MensajeRetornoSimple("");
+        return  retornoSimple;
+    }
+
 
     private Usuario guardarUsuario(Usuario usuario) {
         return usuarioRepo.save(usuario);

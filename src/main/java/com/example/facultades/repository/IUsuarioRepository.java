@@ -23,4 +23,13 @@ public interface IUsuarioRepository extends IGenericRepository<Usuario, Long> {
 
     @Query("SELECT u.imagen FROM Usuario u WHERE u.id = :id")
     String buscarImagenPorIdUser(@Param("id")Long id);
+
+    /*@Query("SELECT u.username FROM Usuario u " +
+            "JOIN u.listaUniversidad ul " + // Aquí unimos Usuario con la entidad intermedia
+            "JOIN ul.universidad univ " + // Aquí unimos con la entidad Universidad
+            "WHERE univ.id = :universidadId")
+    List<String> findUsernamesByUniversidadId(Long universidadId);*/
+
+
+
 }

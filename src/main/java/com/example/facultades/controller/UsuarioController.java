@@ -41,7 +41,10 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
     @Autowired
     private RecaptchaService recaptchaService;
 
-
+    @GetMapping("/findUsernamesByUniversidadId/{id}")
+    public ResponseEntity<MensajeRetornoSimple> findUsernamesByUniversidadId(@PathVariable Long id){
+        return ResponseEntity.ok(usuarioService.findUsernamesByUniversidadId(id));
+    }
 
     @PostMapping("/cambiarContrasenia")
     public ResponseEntity<MensajeRetornoSimple> cambiarContrasenia(@RequestParam Long idUsuario, @RequestParam String nuevaContrasena) throws Exception {
