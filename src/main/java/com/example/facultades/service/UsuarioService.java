@@ -230,8 +230,8 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
 
     @Override
     public MensajeRetornoSimple findUsernamesByUniversidadId(Long universidadId) {
-        //List<String> userNames =  usuarioRepo.findUsernamesByUniversidadId(universidadId);
-        MensajeRetornoSimple retornoSimple = new MensajeRetornoSimple("");
+        String userName =  usuarioRepo.findFirstUsernameByUniversidadIdNative(universidadId);
+        MensajeRetornoSimple retornoSimple = new MensajeRetornoSimple(userName);
         return  retornoSimple;
     }
 
