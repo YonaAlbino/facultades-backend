@@ -36,9 +36,7 @@ public class RespuestaService extends GenericService<Respuesta, Long> implements
     private IRepositoryFactory repositoryFactory;
 
     @Override
-    public Respuesta update(Respuesta respuesta) {
-      return this.save(respuesta);
-    }
+    public Respuesta update(Respuesta respuesta) {return  respuestaRepository.save(respuesta);}
 
     @Override
     public BaseDTO<Respuesta> convertirDTO(Respuesta respuesta) {

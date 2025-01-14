@@ -19,5 +19,6 @@ public class RespuestaDTO extends BaseDTO<Respuesta> {
     private Long usuarioId;         // Solo el ID del usuario
     private String username;
     private boolean editado;
+    private boolean eliminado;
    // private Long respuestaPadreId; // ID de la respuesta padre, si la hay
 }

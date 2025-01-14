@@ -23,6 +23,7 @@ public class Respuesta extends BaseEntity  implements INotificable<Respuesta> {
     private String mensaje;
     private Date fecha;
     private boolean editado;
+    private boolean eliminado;
 
     @OneToMany()
   //  @JsonManagedReference(value = "respuesta")
