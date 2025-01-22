@@ -269,11 +269,6 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     @Override
     public Usuario converirEntidad(BaseDTO<Usuario> DTO) {
         Usuario usuario = modelMapper.map(DTO, Usuario.class);
-        System.out.println("rojelio");
-        //TokenRecuperacionContrasenia token = tokenRecuperacionContraseniaService.findById(usuario.getTokenRecuperacionContrasenia().getId())
-                //.orElseThrow(() -> new RuntimeException("Token no encontrado"));
-        //usuario.setTokenRecuperacionContrasenia(token);
-        System.out.println(usuario.getTokenRecuperacionContrasenia());
         return usuario;
     }
 
