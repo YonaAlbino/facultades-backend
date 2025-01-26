@@ -28,6 +28,8 @@ public class Notificacion extends BaseEntity {
     private boolean permiso;
     private boolean respuesta;
     private boolean publicacionComentada;
+    private boolean respuestaComentarioRecibida;
+    private boolean  respuestaAunaRespuesta;
     private Date fecha;
 
     @ManyToMany(fetch = FetchType.EAGER)

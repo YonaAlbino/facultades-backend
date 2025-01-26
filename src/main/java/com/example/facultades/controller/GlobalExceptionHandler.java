@@ -1,5 +1,6 @@
 package com.example.facultades.controller;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.facultades.excepciones.*;
 import com.example.facultades.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> elMailEnUso(UsuarioExistenteException ex) {
         ErrorResponse error = ErrorResponse.builder()
                 .code(409) // Personalizado: conflicto relacionado con usuario existente
+                .message(ex.getMessage())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+
+
+    @ExceptionHandler(ComentarioNoEncontradoException.class)
+    public ResponseEntity<ErrorResponse> comentarioNoEncontradoException(ComentarioNoEncontradoException ex) {
+        ErrorResponse error = ErrorResponse.builder()
+                .code(404) // Personalizado: conflicto relacionado con usuario existente
                 .message(ex.getMessage())
                 .build();
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
@@ -111,5 +123,9 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
+
+
+
+
 
 }

@@ -79,7 +79,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     }
 
     @Override
-    public String buscarUsuarioPorNombre(String username){
+    public Usuario buscarUsuarioPorNombre(String username){
         return usuarioRepo.buscarUsuarioPorNombre(username);
     }
 
@@ -129,7 +129,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         encriptarContrasenia(usuario);
         Usuario usuarioGuardado = guardarUsuario(usuario);
         if (usuarioGuardado.getId() != null) {
-            manejarNotificacionCreacion(usuarioGuardado);
+            //manejarNotificacionCreacion(usuarioGuardado);
             // Generar y guardar el token de verificación
             TokenVerificacionEmail verificationToken = generarTokenVerificacion(usuarioGuardado);
             verificacionEmailService.save(verificationToken);

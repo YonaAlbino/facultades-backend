@@ -68,15 +68,21 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MensajeRetornoSimple("El captcha token es invalido"));
         }
 
-        String usuarioBuscado = usuarioService.buscarUsuarioPorNombre(registroRequest.email());
+        Usuario usuarioBuscado = usuarioService.buscarUsuarioPorNombre(registroRequest.email());
         if(usuarioBuscado == null){
-            Usuario usuario = new Usuario();
-            usuario.setUsername(registroRequest.email());
-            usuario.setPassword(registroRequest.contrasenia());
-            genericUsuarioService.save(usuario);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new MensajeRetornoSimple("El usuario fue creado"));
+             return this.crearUsuario(registroRequest);
+        }else if(!usuarioBuscado.isEmailVerified()){
+            genericUsuarioService.delete(usuarioBuscado.getId());
+            return this.crearUsuario(registroRequest);
         }else throw new UsuarioExistenteException();
+    }
 
+    private ResponseEntity<MensajeRetornoSimple> crearUsuario(RegistroRequest registroRequest){
+        Usuario usuario = new Usuario();
+        usuario.setUsername(registroRequest.email());
+        usuario.setPassword(registroRequest.contrasenia());
+        genericUsuarioService.save(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new MensajeRetornoSimple("El usuario fue creado"));
     }
 
     @PostMapping("/infraccionar/{id}")

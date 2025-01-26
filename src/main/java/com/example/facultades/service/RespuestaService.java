@@ -1,11 +1,13 @@
 package com.example.facultades.service;
 
 import com.example.facultades.dto.BaseDTO;
+import com.example.facultades.dto.ComentarioDTO;
 import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.dto.RespuestaDTO;
-import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.enums.Socket;
+import com.example.facultades.excepciones.ComentarioEliminadoException;
 import com.example.facultades.generics.GenericService;
+import com.example.facultades.model.Comentario;
 import com.example.facultades.model.Notificacion;
 import com.example.facultades.model.Respuesta;
 import com.example.facultades.repository.IRespuestaRepository;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RespuestaService extends GenericService<Respuesta, Long> implements IRespuestaService, IEntidadAsociable<Respuesta> {
@@ -25,6 +28,8 @@ public class RespuestaService extends GenericService<Respuesta, Long> implements
 
     @Autowired
     private IRespuestaRepository respuestaRepository;
+
+
 
     @Autowired
     private ModelMapper modelMapper;
@@ -87,4 +92,31 @@ public class RespuestaService extends GenericService<Respuesta, Long> implements
         //respuesta.setListaReaccion(asociarEntidades.relacionar(respuesta.getListaReaccion(), repositoryFactory.generarRepositorio(NombreRepositorio.REACCION.getRepoName())));
     }
 
+    @Override
+    public ComentarioDTO findComentariosByListaRespuestaId(Long idRespuesta) {
+        Optional<Comentario> comentarioOptional = respuestaRepository.findComentariosByListaRespuestaId(idRespuesta);
+        Comentario comentario;
+
+        if(comentarioOptional.isEmpty()){
+            throw  new ComentarioEliminadoException();
+        }else{
+            comentario = comentarioOptional.get();
+        }
+
+        ComentarioDTO comentarioDTO = modelMapper.map(comentario, ComentarioDTO.class);
+
+        if (comentario.getUsuario() != null && comentario.getUsuario().getUsername() != null) {
+            comentarioDTO.setUsername(comentario.getUsuario().getUsername());
+        }
+        // Convertir la lista de respuestas del comentario usando el servicio de Respuesta
+        if(comentario.getListaRespuesta() != null){
+            List<RespuestaDTO> listaRespuestasDTO = new ArrayList<>();
+            for (Respuesta respuesta : comentario.getListaRespuesta()) {
+                RespuestaDTO respuestaDTO = (RespuestaDTO) this.convertirDTO(respuesta);
+                listaRespuestasDTO.add(respuestaDTO);
+            }
+            comentarioDTO.setListaRespuesta(listaRespuestasDTO);
+        }
+        return comentarioDTO;
+    }
 }

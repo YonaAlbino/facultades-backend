@@ -18,8 +18,8 @@ import java.util.Optional;
 public interface IUsuarioRepository extends IGenericRepository<Usuario, Long> {
     public Optional<Usuario> findUserEntityByusername(String username);
     public List<Usuario> findUserEntityByListaRolesNombreRol(String nombreRol);
-    @Query("SELECT u.username FROM Usuario u WHERE u.username = :username")
-    String buscarUsuarioPorNombre(@Param("username")String username);
+    @Query("SELECT u FROM Usuario u WHERE u.username = :username")
+    Usuario buscarUsuarioPorNombre(@Param("username")String username);
 
     @Query("SELECT u.imagen FROM Usuario u WHERE u.id = :id")
     String buscarImagenPorIdUser(@Param("id")Long id);

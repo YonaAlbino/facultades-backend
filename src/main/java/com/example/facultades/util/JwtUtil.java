@@ -74,6 +74,7 @@ public class JwtUtil {
             DecodedJWT decodedJWT = verifier.verify(token);
             return decodedJWT;
         } catch (JWTVerificationException jwtVerificationException) {
+            System.out.println(jwtVerificationException.getMessage());
             throw new JWTVerificationException("Token invalido");
         }
     }

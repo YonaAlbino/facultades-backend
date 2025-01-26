@@ -149,6 +149,7 @@ public class EnvioNotificacion {
         String mensaje = "Han comentado tu publicación (" + nombreEntidad + ")";
         notificacionService.guardarNotificacionUsuario(idPropietario, idUniversidad, mensaje, notificacion);
 
+
         DetalleNotificacion detallePropietario = new DetalleNotificacion(
                 "Han publicado un comentario en tu publicación", ultimoComentario.getMensaje(), idUniversidad);
         enviarNotificacionUsuario(detallePropietario, notificacionService, idPropietario);
@@ -159,5 +160,6 @@ public class EnvioNotificacion {
                                                       IgenericService<Comentario, Long> comentarioService) {
         return Utili.recuperarUltimoComentario(listaComentarios, comentarioService);
     }
+
 
 }

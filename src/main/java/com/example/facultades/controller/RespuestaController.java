@@ -1,5 +1,6 @@
 package com.example.facultades.controller;
 
+import com.example.facultades.dto.ComentarioDTO;
 import com.example.facultades.dto.RespuestaDTO;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.generics.IGenericRepository;
@@ -22,6 +23,9 @@ public class RespuestaController extends ControllerGeneric<Respuesta, RespuestaD
    IRespuestaRepository respuestaRepository;
 
     @Autowired
+   private IRespuestaService respuestaService;
+
+    @Autowired
     IGenericRepository<Respuesta, Long> iGenericRepository;
 
     /*@GetMapping("/getUsuarioByIdRespuesta/{idRespuesta}")
@@ -34,5 +38,10 @@ public class RespuestaController extends ControllerGeneric<Respuesta, RespuestaD
     @GetMapping("/entidad/{id}")
     public Respuesta traerRespuesta(@PathVariable Long id){
         return  respuestaRepository.findById(id).get();
+    }
+
+    @GetMapping("/findComentariosByListaRespuestaId/{idRespuesta}")
+    public ResponseEntity<ComentarioDTO> findComentariosByListaRespuestaId(@PathVariable Long idRespuesta){
+       return ResponseEntity.ok(respuestaService.findComentariosByListaRespuestaId(idRespuesta));
     }
 }
