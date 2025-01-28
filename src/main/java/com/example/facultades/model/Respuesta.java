@@ -22,6 +22,7 @@ public class Respuesta extends BaseEntity  implements INotificable<Respuesta> {
     private Long id;*/
     private String mensaje;
     private Date fecha;
+    private Long idComentarioPadre;
     private boolean editado;
     private boolean eliminado;
 

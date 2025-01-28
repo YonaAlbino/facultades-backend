@@ -4,6 +4,7 @@ import com.example.facultades.dto.BaseDTO;
 import com.example.facultades.dto.ComentarioDTO;
 import com.example.facultades.dto.RespuestaDTO;
 import com.example.facultades.enums.NombreRepositorio;
+import com.example.facultades.excepciones.ComentarioNoEncontradoException;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.model.Comentario;
 import com.example.facultades.model.Respuesta;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ComentarioService extends GenericService<Comentario, Long> implements IComentarioService, IEntidadAsociable<Comentario> {
@@ -108,5 +110,13 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
         }
         return listaComentarioDTO;
     }
+
+   /* @Override
+    public ComentarioDTO findComentariosByRespuestaRespuestaId(Long idRespuestaRespuesta) {
+        Optional<Comentario> comentarioOptional =  comentarioRepository.findComentariosByRespuestaRespuestaId(idRespuestaRespuesta);
+        if(comentarioOptional.isEmpty())
+            throw  new ComentarioNoEncontradoException();
+        else return (ComentarioDTO) this.convertirDTO(comentarioOptional.get());
+    }*/
 
 }

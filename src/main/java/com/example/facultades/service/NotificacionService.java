@@ -3,6 +3,7 @@ import com.example.facultades.dto.BaseDTO;
 import com.example.facultades.dto.DetalleNotificacion;
 import com.example.facultades.dto.NotificacionDTO;
 import com.example.facultades.enums.NombreRepositorio;
+import com.example.facultades.enums.Socket;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.generics.IgenericService;
 import com.example.facultades.model.Notificacion;
@@ -149,7 +150,12 @@ public class NotificacionService extends GenericService<Notificacion, Long> impl
         List<Usuario> listaUsuario = obtenerUsuarioPorId(idUsuario);
 
         configurarNotificacion(notificacion, idEvento, informacion, listaLeidos, listaUsuario);
-        this.save(notificacion);
+        Notificacion notificacionGuardada = this.save(notificacion); // Guardar y obtener la entidad persistida
+
+        if(notificacionGuardada.getId() != null){
+            DetalleNotificacion detalleNotificacion = new DetalleNotificacion("",informacion,idEvento);
+            this.enviarNotificacionByWebSocket(Socket.TOPICO_PERSONAL.getRuta() +"/"+idUsuario, detalleNotificacion);
+        }
     }
 
 

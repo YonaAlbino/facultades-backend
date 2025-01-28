@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface IComentarioRepository extends IGenericRepository<Comentario, Long> {
 //
@@ -55,9 +57,22 @@ public interface IComentarioRepository extends IGenericRepository<Comentario, Lo
             "ORDER BY c.fecha DESC") // Ordenar por fecha descendente
     List<Comentario> findComentariosByCarreraId(@Param("carrerraId") Long carrerraId , Pageable pageable);
 
-
-
-
-
-
+    /*@Query(value = """
+        SELECT c.* 
+        FROM comentario c
+        INNER JOIN comentario_lista_respuesta clr 
+            ON clr.comentario_id = c.id
+        WHERE clr.lista_respuesta_id = (
+            SELECT rlr.respuesta_id 
+            FROM respuesta_lista_respuesta rlr 
+            WHERE rlr.lista_respuesta_id = :respuestaRespuestaId
+        )
+    """, nativeQuery = true)
+    Optional<Comentario> findComentariosByRespuestaRespuestaId(@Param("respuestaRespuestaId") Long respuestaRespuestaId);*/
 }
+
+
+
+
+
+

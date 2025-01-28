@@ -65,38 +65,6 @@ public class NotificacionController extends ControllerGeneric<Notificacion, Noti
         return ResponseEntity.ok(mensaje);
     }
 
-   /* @PostMapping("/notificarRespuestaRecibidaAcomentario/{idPropietarioComentario}/{idComentario}/{idRespuesta}")
-    public ResponseEntity<MensajeRetornoSimple>  notificarRespuestaRecibidaAcomentario(@PathVariable Long idPropietarioComentario, @PathVariable Long idComentario, @PathVariable Long idRespuesta){
-        String informacion = "";
-        Optional<Comentario> comentarioOptional = icomentarioServiceGeneric.findById(idComentario);
-        if(comentarioOptional.isPresent()){
-            informacion = comentarioOptional.get().getMensaje();
-        } else throw  new ComentarioNoEncontradoException();
-        Notificacion notificacion = new Notificacion();
-        notificacion.setFecha(new Date());
-        notificacion.setRespuestaComentarioRecibida(true);
-        notificacionService.guardarNotificacionUsuario(idPropietarioComentario,idRespuesta, "Has recibido una respuesta a tu comentario: "+ informacion, notificacion);
-        return  ResponseEntity.ok(new MensajeRetornoSimple("Notificación enviada con exito"));
-    }
-
-    @PostMapping("/notificarRespuestaRecibidaAUnaRespuesta/{idPropietarioRespuesta}/{idRespuesta}/{idRespuestaRecibida}")
-    public ResponseEntity<MensajeRetornoSimple>  notificarRespuestaRecibidaAUnaRespuesta(@PathVariable Long idPropietarioRespuesta, @PathVariable Long idRespuesta, @PathVariable Long idRespuestaRecibida){
-        String informacion = "";
-        Optional<Respuesta> respuestaDTO = irespuestaServiceGeneric.findById(idRespuesta);
-        if(respuestaDTO.isPresent()){
-            informacion = respuestaDTO.get().getMensaje();
-        } else throw  new RespuestaNoEncontradaException();
-        Notificacion notificacion = new Notificacion();
-        notificacion.setFecha(new Date());
-        notificacion.setRespuestaComentarioRecibida(true);
-        notificacionService.guardarNotificacionUsuario(idPropietarioRespuesta,idRespuesta, "Has recibido una respuesta a tu comentario: "+ informacion, notificacion);
-        return  ResponseEntity.ok(new MensajeRetornoSimple("Notificación enviada con exito"));
-    }*/
-
-
-
-
-
     @PostMapping("/notificarRespuestaRecibidaAcomentario/{idPropietarioComentario}/{idComentario}/{idRespuesta}")
     public ResponseEntity<MensajeRetornoSimple> notificarRespuestaRecibidaAcomentario(@PathVariable Long idPropietarioComentario, @PathVariable Long idComentario, @PathVariable Long idRespuesta) {
         return notificarRespuestaRecibida(idPropietarioComentario, idComentario, idRespuesta, "comentario");

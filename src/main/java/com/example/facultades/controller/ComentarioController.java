@@ -59,5 +59,8 @@ public class ComentarioController extends ControllerGeneric<Comentario, Comentar
         return new ResponseEntity<>(listaComentarios, HttpStatus.OK);
     }
 
-
+   /* @GetMapping("/findComentarioByRespuestaRespuestaId/{idRespuestaRespuesta}")
+    public ResponseEntity<ComentarioDTO> findComentariosByRespuestaRespuestaId(@PathVariable Long idRespuestaRespuesta){
+        return  ResponseEntity.ok(comentarioService.findComentariosByRespuestaRespuestaId(idRespuestaRespuesta));
+    }*/
 }

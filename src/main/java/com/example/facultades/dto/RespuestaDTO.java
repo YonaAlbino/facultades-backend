@@ -20,5 +20,6 @@ public class RespuestaDTO extends BaseDTO<Respuesta> {
     private String username;
     private boolean editado;
     private boolean eliminado;
+    private Long idComentarioPadre;
    // private Long respuestaPadreId; // ID de la respuesta padre, si la hay
 }
