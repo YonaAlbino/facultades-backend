@@ -151,7 +151,7 @@ public class EnvioNotificacion {
 
 
         DetalleNotificacion detallePropietario = new DetalleNotificacion(
-                "Han publicado un comentario en tu publicación", ultimoComentario.getMensaje(), idUniversidad);
+                "Han publicado un comentario en tu publicación: (" + nombreEntidad+")", "Comentario: "+ultimoComentario.getMensaje(), idUniversidad);
         enviarNotificacionUsuario(detallePropietario, notificacionService, idPropietario);
     }
 

@@ -91,7 +91,7 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
         if(universidadGuardada.getId() != null){
             Notificacion notificacion = new Notificacion();
             notificacion.setUniversidad(true);
-            Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_UNIVERSIDAD.getNotificacion(), universidadGuardada, notificacionService, notificacion);
+            Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_UNIVERSIDAD.getNotificacion() + ": ( "+ universidadGuardada.getNombre()+" )", universidadGuardada, notificacionService, notificacion);
             return universidadGuardada;
         }
         //manejar error en caso de no guarda la uni
