@@ -19,6 +19,7 @@ public class CarreraDTO extends BaseDTO<Carrera> {
     private String nombre;
     private String grado;
     private String duracion;
+    private Long idUsuario;
     private boolean activa;
     private List<ComentarioDTO> listaComentarios;
     private List<CalificacionDTO> listaCalificacion;

@@ -62,7 +62,7 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
         if(carreraGuardada.getId() != null){
             Notificacion notificacion = new Notificacion();
             notificacion.setCarrera(true);
-            Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_CARRERA.getNotificacion(), carreraGuardada, notificacionService, notificacion);
+            Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_CARRERA.getNotificacion() +": ("+carreraGuardada.getNombre()+")", carreraGuardada, notificacionService, notificacion);
             return carreraGuardada;
         }
         //Manejar error en caso no se guarde
