@@ -1,20 +1,19 @@
 package com.example.facultades.service;
 
-import com.example.facultades.dto.BaseDTO;
-import com.example.facultades.dto.ComentarioDTO;
-import com.example.facultades.dto.DetalleNotificacion;
-import com.example.facultades.dto.UniversidadDTO;
+import com.example.facultades.dto.*;
 import com.example.facultades.enums.MensajeNotificacionAdmin;
 import com.example.facultades.enums.NombreRepositorio;
 import com.example.facultades.enums.Socket;
 import com.example.facultades.excepciones.RegistroExistenteException;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.generics.IgenericService;
+import com.example.facultades.model.Carrera;
 import com.example.facultades.model.Comentario;
 import com.example.facultades.model.Notificacion;
 import com.example.facultades.model.Universidad;
 import com.example.facultades.repository.IUniversidadRepository;
 import com.example.facultades.util.*;
+import org.aspectj.weaver.ast.Not;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -54,10 +53,19 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
     @Lazy
     private EnvioNotificacion envioNotificacion;
 
+
     @Override
     public Universidad update(Universidad universidad) {
         if (Utili.verificarInsercionNuevoComentario(universidad, universidadRepository, universidad.getListaComentarios())) {
             envioNotificacion.enviarGuardarNotificacionNuevoComentario(universidad.getNombre(),universidad, universidad.getId(),universidad.getListaComentarios(), comentarioService, notificacionService);
+        }
+
+        Carrera carreraAgregada = this.verificarInsercionCarrera(universidad);
+        if(carreraAgregada != null){
+            Notificacion notificacion = new Notificacion();
+            notificacion.setCarreraAgregada(true);
+            notificacionService.guardarNotificacionUsuario(universidad.getUsuario().getId(), carreraAgregada.getId(),"Han agregado una nueva carrera: ("+carreraAgregada.getNombre() +") a tu universidad: " +"(" + universidad.getNombre() +")", notificacion);
+           // notificacionService.enviarNotificacionByWebSocket();
         }
         this.asociar(universidad);
         return universidadRepository.save(universidad);
@@ -135,6 +143,24 @@ public class UniversidadService extends GenericService<Universidad, Long> implem
         universidad.setListaComentarios(asociarEntidades.relacionar(universidad.getListaComentarios(), repositoryFactory.generarRepositorio(NombreRepositorio.COMENTARIO.getRepoName())));
         universidad.setListaCarreras(asociarEntidades.relacionar(universidad.getListaCarreras(), repositoryFactory.generarRepositorio(NombreRepositorio.CARRERA.getRepoName())));
         universidad.setListaCalificacion(asociarEntidades.relacionar(universidad.getListaCalificacion(), repositoryFactory.generarRepositorio(NombreRepositorio.CALIFICACION.getRepoName())));
+    }
+
+    @Override
+    public Carrera verificarInsercionCarrera(Universidad universidad) {
+        Universidad universidadBuscada = this.findById(universidad.getId()).orElse(null);
+
+        if (universidadBuscada == null || universidadBuscada.getListaCarreras() == null || universidad.getListaCarreras() == null) {
+            return null; // Retorna null si la universidad no existe o si alguna lista es nula
+        }
+
+        List<Carrera> listaCarrerasEnDb = universidadBuscada.getListaCarreras();
+        List<Carrera> listaCarrerasActual = universidad.getListaCarreras();
+
+        if (!listaCarrerasEnDb.isEmpty() && !listaCarrerasActual.isEmpty() && listaCarrerasActual.size() > listaCarrerasEnDb.size()) {
+            return listaCarrerasActual.get(listaCarrerasActual.size() - 1);
+        }
+
+        return null;
     }
 
 }

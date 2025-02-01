@@ -1,6 +1,7 @@
 package com.example.facultades.service;
 
 import com.example.facultades.excepciones.RegistroExistenteException;
+import com.example.facultades.model.Carrera;
 import com.example.facultades.model.Universidad;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,5 +14,6 @@ public interface IUniversidadService  {
     Page<Universidad> obtenerUniversidadesPaginadas(Pageable pageable);
     public Universidad getIDUniversidadPorCarreraId(Long listaCarrerasId);
     public List<Universidad> getUniversidadByName(String nombreUniversidad);
+    public Carrera verificarInsercionCarrera(Universidad universidad);
 
 }

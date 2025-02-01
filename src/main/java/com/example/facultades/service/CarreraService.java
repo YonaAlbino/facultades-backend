@@ -72,11 +72,53 @@ public class CarreraService extends GenericService<Carrera, Long> implements ICa
 
     @Override
     public Carrera update(Carrera carrera) {
-        Long idUniversidad = carrera.getUniversidad().getId();
-        if (Utili.verificarInsercionNuevoComentario(carrera, carreraRepository, carrera.getListaComentarios()))
-            envioNotificacion.enviarGuardarNotificacionNuevoComentario(carrera.getNombre(),carrera, idUniversidad,carrera.getListaComentarios(), comentarioService, notificacionService);
+        if (esNuevoComentario(carrera)) {
+            enviarNotificacionesNuevoComentario(carrera);
+        }
         this.asociar(carrera);
         return carreraRepository.save(carrera);
+    }
+
+    private boolean esNuevoComentario(Carrera carrera) {
+        return Utili.verificarInsercionNuevoComentario(carrera, carreraRepository, carrera.getListaComentarios());
+    }
+
+    private void enviarNotificacionesNuevoComentario(Carrera carrera) {
+        Long idUniversidad = carrera.getUniversidad().getId();
+        List<Comentario> comentarios = carrera.getListaComentarios();
+
+        if (comentarios.isEmpty()) {
+            return;
+        }
+
+        Comentario comentario = comentarios.get(comentarios.size() - 1);
+
+        Notificacion notificacion = new Notificacion();
+        notificacion.setComentarioAgregadoCarrera(true);
+
+        Notificacion notificacionAdmin = new Notificacion();
+        notificacionAdmin.setComentario(true);
+
+        notificacionService.guardarNotificacionUsuario(
+                carrera.getIdUsuario(),
+                idUniversidad,
+                "Han publicado un nuevo comentario en tu carrera: (" + carrera.getNombre() + ")",
+                notificacion
+        );
+
+        notificacionService.guardarNotificacionAdmin(
+                comentario.getId(),
+                "Se ha creado un nuevo comentario",
+                notificacionAdmin
+        );
+
+        DetalleNotificacion detalleNotificacion = new DetalleNotificacion(
+                "Se ha creado un nuevo comentario",
+                comentario.getMensaje(),
+                comentario.getId()
+        );
+
+        notificacionService.enviarNotificacionByWebSocket(Socket.ADMIN_PREFIJO.getRuta(), detalleNotificacion);
     }
 
     @Override

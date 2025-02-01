@@ -80,7 +80,7 @@ public class RespuestaService extends GenericService<Respuesta, Long> implements
             notificacion.setRespuesta(true);
             DetalleNotificacion detalleNotificacion = Utili.generarDetalleNotificacion("Se creo una nueva respuesta", respuestaGuardada);
             notificacionService.enviarNotificacionByWebSocket(Socket.ADMIN_PREFIJO.getRuta(), detalleNotificacion);
-            notificacionService.guardarNotificacionAdmin(respuestaGuardada.getId(), "Se creo una nueva respuesta :", notificacion);
+            notificacionService.guardarNotificacionAdmin(respuestaGuardada.getId(), "Se creo una nueva respuesta", notificacion);
             return  respuestaGuardada;
         }else
             throw new RuntimeException("La respuesta no se pudo guardar");
