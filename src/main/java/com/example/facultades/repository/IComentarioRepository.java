@@ -43,7 +43,7 @@ public interface IComentarioRepository extends IGenericRepository<Comentario, Lo
             "    JOIN u.listaComentarios uc " +
             "    WHERE u.id = :universidadId" +
             ") " +
-            "ORDER BY c.fecha DESC") // Ordenar por fecha descendente
+            "ORDER BY c.fecha DESC") // Ordenar por fecha reciente
     List<Comentario> findComentariosByUniversidadId(@Param("universidadId") Long universidadId , Pageable pageable);
 
     @Query("SELECT c " +
@@ -54,8 +54,47 @@ public interface IComentarioRepository extends IGenericRepository<Comentario, Lo
             "    JOIN carrera.listaComentarios uc " +
             "    WHERE carrera.id = :carrerraId" +
             ") " +
-            "ORDER BY c.fecha DESC") // Ordenar por fecha descendente
+            "ORDER BY c.fecha DESC") // Ordenar por fecha reciente
     List<Comentario> findComentariosByCarreraId(@Param("carrerraId") Long carrerraId , Pageable pageable);
+
+
+    @Query("SELECT c " +
+            "FROM Comentario c " +
+            "WHERE c.id IN (" +
+            "    SELECT uc.id " +
+            "    FROM Universidad u " +
+            "    JOIN u.listaComentarios uc " +
+            "    WHERE u.id = :universidadId" +
+            ") " +
+            "ORDER BY c.fecha ASC") // Ordenar por fecha reciente
+    List<Comentario> findComentariosByUniversidadIdAsc(@Param("universidadId") Long universidadId , Pageable pageable);
+
+    @Query("SELECT c " +
+            "FROM Comentario c " +
+            "WHERE c.id IN (" +
+            "    SELECT uc.id " +
+            "    FROM Carrera carrera " +
+            "    JOIN carrera.listaComentarios uc " +
+            "    WHERE carrera.id = :carrerraId" +
+            ") " +
+            "ORDER BY c.fecha ASC") // Ordenar por fecha reciente
+    List<Comentario> findComentariosByCarreraIdAsc(@Param("carrerraId") Long carrerraId , Pageable pageable);
+
+    @Query(value = """
+            SELECT c.*, 
+                   COALESCE(SUM(r.me_gusta), 0) AS total_me_gusta
+            FROM comentario c
+            INNER JOIN universidad_lista_comentarios uc ON c.id = uc.lista_comentarios_id
+            LEFT JOIN comentario_lista_reaccion lr ON c.id = lr.comentario_id
+            LEFT JOIN reaccion r ON lr.lista_reaccion_id = r.id  
+            WHERE uc.universidad_id = :universidadId
+            GROUP BY c.id, c.mensaje, c.fecha, c.editado, c.eliminado, c.usuario_id, c.carrera_id
+            HAVING SUM(r.me_gusta) > 0 
+            ORDER BY total_me_gusta DESC
+            """, nativeQuery = true)
+    List<Comentario> buscarComentariosOrdenadosMeGusta(@Param("universidadId") Long universidadId, Pageable pageable);
+
+
 
     /*@Query(value = """
         SELECT c.* 

@@ -90,9 +90,17 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
     }
 
     @Override
-    public List<ComentarioDTO> findComentariosByUniversidadId(Long idUniversidad, int cantidadRegistros, int pagina) {
+    public List<ComentarioDTO> findComentariosByUniversidadId (Long idUniversidad, int cantidadRegistros, int pagina, boolean recientes, boolean antiguos, boolean votados ) {
         Pageable pageable = PageRequest.of(cantidadRegistros, pagina);
-        List<Comentario> listaComentarios = comentarioRepository.findComentariosByUniversidadId(idUniversidad, pageable);
+        List<Comentario> listaComentarios = new ArrayList<>();
+        if(recientes){
+            listaComentarios = comentarioRepository.findComentariosByUniversidadId(idUniversidad, pageable);
+        } else if (antiguos) {
+            listaComentarios = comentarioRepository.findComentariosByUniversidadIdAsc(idUniversidad, pageable);
+
+        }else if (votados){
+            listaComentarios = comentarioRepository.buscarComentariosOrdenadosMeGusta(idUniversidad, pageable);
+        }
         List<ComentarioDTO> listaComentarioDTO = new ArrayList<>();
         for (Comentario comentario : listaComentarios){
             listaComentarioDTO.add((ComentarioDTO) this.convertirDTO(comentario));
@@ -101,9 +109,15 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
     }
 
     @Override
-    public List<ComentarioDTO> findComentariosByCarreraId(Long idCarrera, int cantidadRegistros, int pagina) {
+    public List<ComentarioDTO> findComentariosByCarreraId (Long idCarrera, int cantidadRegistros, int pagina,boolean recientes,boolean antiguos,boolean votados) {
         Pageable pageable = PageRequest.of(cantidadRegistros, pagina);
-        List<Comentario> listaComentarios = comentarioRepository.findComentariosByCarreraId(idCarrera, pageable);
+        List<Comentario> listaComentarios = new ArrayList<>();
+        if(recientes){
+            listaComentarios = comentarioRepository.findComentariosByCarreraId(idCarrera, pageable);
+        } else if(antiguos){
+            listaComentarios = comentarioRepository.findComentariosByCarreraIdAsc(idCarrera, pageable);
+        }
+
         List<ComentarioDTO> listaComentarioDTO = new ArrayList<>();
         for (Comentario comentario : listaComentarios){
             listaComentarioDTO.add((ComentarioDTO) this.convertirDTO(comentario));

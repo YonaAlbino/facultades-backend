@@ -45,17 +45,24 @@ public class ComentarioController extends ControllerGeneric<Comentario, Comentar
     public ResponseEntity<List<ComentarioDTO>> encontrarComentariosPorIdUniversidad(
             @PathVariable long idUniversidad,
             @RequestParam(defaultValue = "0") int pagina,
-            @RequestParam(defaultValue =  "10") int tamanio){
-        List<ComentarioDTO> listaComentarios = comentarioService.findComentariosByUniversidadId(idUniversidad, pagina, tamanio);
+            @RequestParam(defaultValue =  "10") int tamanio,
+            @RequestParam boolean recientes,
+            @RequestParam boolean antiguos,
+            @RequestParam boolean votados){
+        List<ComentarioDTO> listaComentarios = comentarioService.findComentariosByUniversidadId(idUniversidad, pagina, tamanio, recientes, antiguos, votados);
         return new ResponseEntity<>(listaComentarios, HttpStatus.OK);
     }
+
 
     @GetMapping("/encontrarComentariosPorIdCarrera/{idCarrera}")
     public ResponseEntity<List<ComentarioDTO>> encontrarComentariosPorIdCarrera(
             @PathVariable long idCarrera,
             @RequestParam(defaultValue = "0") int pagina,
-            @RequestParam(defaultValue =  "10") int tamanio){
-        List<ComentarioDTO> listaComentarios = comentarioService.findComentariosByCarreraId(idCarrera, pagina, tamanio);
+            @RequestParam(defaultValue =  "10") int tamanio,
+            @RequestParam boolean recientes,
+            @RequestParam boolean antiguos,
+            @RequestParam boolean votados){
+        List<ComentarioDTO> listaComentarios = comentarioService.findComentariosByCarreraId(idCarrera, pagina, tamanio, recientes, antiguos, votados);
         return new ResponseEntity<>(listaComentarios, HttpStatus.OK);
     }
 
