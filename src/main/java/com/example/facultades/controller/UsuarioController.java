@@ -1,6 +1,8 @@
 package com.example.facultades.controller;
 
 import com.example.facultades.dto.*;
+import com.example.facultades.excepciones.CaptchaException;
+import com.example.facultades.excepciones.NickEnUsoException;
 import com.example.facultades.excepciones.UsuarioExistenteException;
 import com.example.facultades.excepciones.UsuarioNoEncontradoException;
 import com.example.facultades.generics.ControllerGeneric;
@@ -65,22 +67,38 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
         boolean isCaptchaValid = recaptchaService.verifyRecaptcha(registroRequest.captchaToken());
 
         if (!isCaptchaValid) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MensajeRetornoSimple("El captcha token es invalido"));
+           throw new CaptchaException();
         }
 
         Usuario usuarioBuscado = usuarioService.buscarUsuarioPorNombre(registroRequest.email());
-        if(usuarioBuscado == null){
-             return this.crearUsuario(registroRequest);
-        }else if(!usuarioBuscado.isEmailVerified()){
+        Usuario usuarioBuscadoNick = usuarioService.buscarUsuarioPorNick(registroRequest.nick());
+
+        // Verificar si el nick ya está en uso
+        if (usuarioBuscadoNick != null) {
+            throw new NickEnUsoException();
+        }
+
+        // Si el usuario no existe, crearlo
+        if (usuarioBuscado == null) {
+            return this.crearUsuario(registroRequest);
+        }
+
+        // Si el usuario existe pero no ha verificado su email, eliminarlo y crear uno nuevo
+        if (!usuarioBuscado.isEmailVerified()) {
             genericUsuarioService.delete(usuarioBuscado.getId());
             return this.crearUsuario(registroRequest);
-        }else throw new UsuarioExistenteException();
+        }
+
+        // Si el usuario existe y está verificado, lanzar una excepción
+        throw new UsuarioExistenteException();
+
     }
 
     private ResponseEntity<MensajeRetornoSimple> crearUsuario(RegistroRequest registroRequest){
         Usuario usuario = new Usuario();
         usuario.setUsername(registroRequest.email());
         usuario.setPassword(registroRequest.contrasenia());
+        usuario.setNick(registroRequest.nick());
         genericUsuarioService.save(usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(new MensajeRetornoSimple("El usuario fue creado"));
     }

@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString(callSuper = true)
 public class UsuarioDTO extends BaseDTO<Usuario> {
-
+        private String nick;
         private String username;
         private String password;
         private String imagen;

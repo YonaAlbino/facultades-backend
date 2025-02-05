@@ -235,6 +235,11 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         return  retornoSimple;
     }
 
+    @Override
+    public Usuario buscarUsuarioPorNick(String nick) {
+        return usuarioRepo.buscarUsuarioPorNick(nick);
+    }
+
 
     private Usuario guardarUsuario(Usuario usuario) {
         return usuarioRepo.save(usuario);

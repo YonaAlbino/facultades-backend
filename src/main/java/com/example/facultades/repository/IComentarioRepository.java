@@ -3,13 +3,11 @@ package com.example.facultades.repository;
 import com.example.facultades.generics.IGenericRepository;
 import com.example.facultades.model.Comentario;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface IComentarioRepository extends IGenericRepository<Comentario, Long> {
@@ -92,8 +90,21 @@ public interface IComentarioRepository extends IGenericRepository<Comentario, Lo
             HAVING SUM(r.me_gusta) > 0 
             ORDER BY total_me_gusta DESC
             """, nativeQuery = true)
-    List<Comentario> buscarComentariosOrdenadosMeGusta(@Param("universidadId") Long universidadId, Pageable pageable);
+    List<Comentario> buscarComentariosOrdenadosMeGustaUniversidad(@Param("universidadId") Long universidadId, Pageable pageable);
 
+    @Query(value = """
+        SELECT c.*, 
+               COALESCE(SUM(r.me_gusta), 0) AS total_me_gusta
+        FROM comentario c
+        INNER JOIN carrera_lista_comentarios cc ON c.id = cc.lista_comentarios_id
+        LEFT JOIN comentario_lista_reaccion lr ON c.id = lr.comentario_id
+        LEFT JOIN reaccion r ON lr.lista_reaccion_id = r.id  
+        WHERE cc.carrera_id = :carreraId
+        GROUP BY c.id, c.mensaje, c.fecha, c.editado, c.eliminado, c.usuario_id, c.carrera_id
+        HAVING SUM(r.me_gusta) > 0
+        ORDER BY total_me_gusta DESC
+        """, nativeQuery = true)
+    List<Comentario> buscarComentariosOrdenadosMeGustaCarrera(@Param("carreraId") Long carreraId, Pageable pageable);
 
 
     /*@Query(value = """

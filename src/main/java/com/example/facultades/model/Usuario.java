@@ -21,6 +21,7 @@ public class Usuario extends BaseEntity implements INotificable<Usuario> {
     /*@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long idUsuario;*/
+    private String nick;
     private String username;
     private String password;
     private String imagen;

@@ -29,9 +29,13 @@ public class Carrera extends BaseEntity implements INotificable<Carrera>, ItipoE
    // @OneToMany(cascade = CascadeType.ALL)
    // private List<Comentario> listaComentarios;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+   /* @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "carrera_id") // Necesario para la clave foránea en Comentario
+    private List<Comentario> listaComentarios;*/
+
+    @OneToMany(cascade = CascadeType. ALL)
     private List<Comentario> listaComentarios;
+
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Calificacion> listaCalificacion;

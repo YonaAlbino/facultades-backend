@@ -22,4 +22,6 @@ public interface IUsuarioService {
     public void actualizarContrasenia(Long idUsuario, String nuevaContrasenia, String contraseniaActual);
     public  String buscarImagenPorIdUser(Long id);
     public MensajeRetornoSimple findUsernamesByUniversidadId(Long universidadId);
+
+    Usuario buscarUsuarioPorNick(String nick);
 }

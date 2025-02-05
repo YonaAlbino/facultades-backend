@@ -33,6 +33,6 @@ public interface IUsuarioRepository extends IGenericRepository<Usuario, Long> {
 
 
 
-
-
+    @Query("SELECT u FROM Usuario u WHERE u.nick = :nick")
+    Usuario buscarUsuarioPorNick(@Param("nick")String nick);
 }

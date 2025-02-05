@@ -51,6 +51,7 @@ public class RespuestaService extends GenericService<Respuesta, Long> implements
         // Asignar username del usuario principal si existe
         if (respuesta.getUsuario() != null && respuesta.getUsuario().getUsername() != null) {
             respuestaDTO.setUsername(respuesta.getUsuario().getUsername());
+            respuestaDTO.setNickname(respuesta.getUsuario().getNick());
         }
 
         // Mapeo recursivo de la lista de respuestas

@@ -33,6 +33,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(NickEnUsoException.class)
+    public ResponseEntity<ErrorResponse> nickEnUso(NickEnUsoException ex) {
+        ErrorResponse error = ErrorResponse.builder()
+                .code(409) // Personalizado: conflicto relacionado con usuario existente
+                .message(ex.getMessage())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+
+
     // Usuario existente: HTTP 409 (conflicto)
     @ExceptionHandler(UsuarioExistenteException.class)
     public ResponseEntity<ErrorResponse> elMailEnUso(UsuarioExistenteException ex) {

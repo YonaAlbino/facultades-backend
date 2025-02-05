@@ -4,7 +4,6 @@ import com.example.facultades.dto.BaseDTO;
 import com.example.facultades.dto.ComentarioDTO;
 import com.example.facultades.dto.RespuestaDTO;
 import com.example.facultades.enums.NombreRepositorio;
-import com.example.facultades.excepciones.ComentarioNoEncontradoException;
 import com.example.facultades.generics.GenericService;
 import com.example.facultades.model.Comentario;
 import com.example.facultades.model.Respuesta;
@@ -16,12 +15,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ComentarioService extends GenericService<Comentario, Long> implements IComentarioService, IEntidadAsociable<Comentario> {
@@ -61,6 +58,7 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
 
         if (comentario.getUsuario() != null && comentario.getUsuario().getUsername() != null) {
             comentarioDTO.setUsername(comentario.getUsuario().getUsername());
+            comentarioDTO.setNickname(comentario.getUsuario().getNick());
         }
         // Convertir la lista de respuestas del comentario usando el servicio de Respuesta
         if(comentario.getListaRespuesta() != null){
@@ -99,7 +97,7 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
             listaComentarios = comentarioRepository.findComentariosByUniversidadIdAsc(idUniversidad, pageable);
 
         }else if (votados){
-            listaComentarios = comentarioRepository.buscarComentariosOrdenadosMeGusta(idUniversidad, pageable);
+            listaComentarios = comentarioRepository.buscarComentariosOrdenadosMeGustaUniversidad(idUniversidad, pageable);
         }
         List<ComentarioDTO> listaComentarioDTO = new ArrayList<>();
         for (Comentario comentario : listaComentarios){
@@ -116,6 +114,8 @@ public class ComentarioService extends GenericService<Comentario, Long> implemen
             listaComentarios = comentarioRepository.findComentariosByCarreraId(idCarrera, pageable);
         } else if(antiguos){
             listaComentarios = comentarioRepository.findComentariosByCarreraIdAsc(idCarrera, pageable);
+        } else if(votados){
+            listaComentarios = comentarioRepository.buscarComentariosOrdenadosMeGustaCarrera(idCarrera, pageable);
         }
 
         List<ComentarioDTO> listaComentarioDTO = new ArrayList<>();
