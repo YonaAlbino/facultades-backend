@@ -3,6 +3,7 @@ package com.example.facultades.service;
 
 
 import com.example.facultades.dto.MensajeRetornoSimple;
+import com.example.facultades.model.RefreshToken;
 import com.example.facultades.model.TokenVerificacionEmail;
 import com.example.facultades.model.Usuario;
 
@@ -22,6 +23,6 @@ public interface IUsuarioService {
     public void actualizarContrasenia(Long idUsuario, String nuevaContrasenia, String contraseniaActual);
     public  String buscarImagenPorIdUser(Long id);
     public MensajeRetornoSimple findUsernamesByUniversidadId(Long universidadId);
-
+    public RefreshToken crearRefreshToken(Usuario usuario);
     Usuario buscarUsuarioPorNick(String nick);
 }

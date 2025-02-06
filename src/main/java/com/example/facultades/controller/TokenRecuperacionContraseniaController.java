@@ -3,6 +3,8 @@ package com.example.facultades.controller;
 import com.example.facultades.dto.MensajeRetornoSimple;
 import com.example.facultades.dto.TokenRecuperacionContraseniaDTO;
 import com.example.facultades.enums.DuracionToken;
+import com.example.facultades.excepciones.EmailNoEncontradoException;
+import com.example.facultades.excepciones.EmailNoVerificadoException;
 import com.example.facultades.excepciones.UsuarioNoEncontradoException;
 import com.example.facultades.generics.ControllerGeneric;
 import com.example.facultades.generics.IgenericService;
@@ -62,6 +64,12 @@ public class TokenRecuperacionContraseniaController  extends ControllerGeneric<T
     @PostMapping("/recuperarContraseña/{email}")
     public ResponseEntity<MensajeRetornoSimple> recuperarContrasenia(@PathVariable String email){
         Optional<Usuario> usuario = usuarioService.findUserEntityByusername(email);
+
+        if(usuario.isPresent()){
+            if(!usuario.get().isEmailVerified()){
+                throw new EmailNoVerificadoException();
+            }
+        }
 
         if(usuario.isEmpty())
             throw  new UsuarioNoEncontradoException();

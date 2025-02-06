@@ -18,6 +18,8 @@ public class EmailService implements IEmailService{
     @Value("${correo.destinatario}")
     private String correoDestinatario;
 
+    @Value("${SERVIDOR}")
+    private String servidor;
     //@Autowired
     //private TemplateEngine templateEngine;
     @Override
@@ -48,7 +50,7 @@ public class EmailService implements IEmailService{
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(emailDestinatario);
             helper.setSubject(asunto);
-            helper.setText(mensaje);
+            helper.setText(mensaje, true);
             javaMailSender.send(message);
         }catch (Exception ex){
             throw new RuntimeException("error al enviar el correo: " + ex.getMessage(), ex);
@@ -57,13 +59,25 @@ public class EmailService implements IEmailService{
 
     @Override
     public void enviarCorreoVerificacionEmail(String email, String token, Long idTokenVerificador) {
-        String link = "http://localhost:8080/usuario/verificarEmail/"+token+"/"+idTokenVerificador;
+        String link = servidor+"/usuario/verificarEmail/"+token+"/"+idTokenVerificador;
+        String mensajeHtml = "<div style='font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; text-align: center;'>"
+                + "<h2 style='color: #0066cc;'>Gracias por registrarte en FacusArg</h2>"
+                + "<h3 style='color: #0066cc;'>Verificación de Correo Electrónico</h3>"
+                + "<p>Por favor, haz clic en el siguiente enlace para verificar tu correo electrónico:</p>"
+                + "<p style='text-align: center; margin: 20px 0;'><a href='" + link + "' "
+                + "style='display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #28a745; "
+                + "text-decoration: none; border-radius: 5px;'>Verificar Correo</a></p>"
+                + "<p>Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:</p>"
+                + "<p style='background: #f4f4f4; padding: 10px; border-radius: 5px; word-break: break-all; text-align: center;'>" + link + "</p>"
+                + "<p style='color: #777;'>Este enlace expirará en 24 horas.</p>"
+                + "<p style='color: #777;'>Este es un mensaje automático. No es necesario responder.</p>"
+                + "</div>";
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(email);
             helper.setSubject("Verifica tu email");
-            helper.setText("Haz clic en el siguiente enlace para verificar tu cuenta: " + link);
+            helper.setText( mensajeHtml, true);
 
             javaMailSender.send(message);
         }catch (Exception ex){
@@ -73,19 +87,32 @@ public class EmailService implements IEmailService{
 
     @Override
     public void enviarCorreoRecuperacionContrasena(String email, String token, Long idTokenVerificador) {
-        String link = "http://localhost:8080/TokenRecuperacionContrasenia/reestablecerContrasenia/"+token+"/"+idTokenVerificador;
+        String link = servidor+"/TokenRecuperacionContrasenia/reestablecerContrasenia/"+token+"/"+idTokenVerificador;
+        String mensajeHtml = "<div style='font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; text-align: center;'>"
+                + "<h2 style='color: #0066cc;'>Recuperación de Contraseña</h2>"
+                + "<h3 style='color: #0066cc;'>Haz clic en el siguiente enlace para restablecer tu contraseña</h3>"
+                + "<p style='color: #555;'>Por favor, haz clic en el siguiente botón para restablecer tu contraseña:</p>"
+                + "<p style='text-align: center; margin: 20px 0;'><a href='" + link + "' "
+                + "style='display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #28a745; "
+                + "text-decoration: none; border-radius: 5px;'>Restablecer Contraseña</a></p>"
+                + "<p>Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:</p>"
+                + "<p style='background: #f4f4f4; padding: 10px; border-radius: 5px; word-break: break-all; text-align: center;'>" + link + "</p>"
+                + "<p style='color: #777;'>Este enlace expirará en 30 minutos.</p>"
+                +"<p style='color: #777;'>Este es un mensaje automático. No es necesario responder.</p>"
+                + "</div>";
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(email);
             helper.setSubject("Reestablecer contraseña");
-            helper.setText("Haz clic en el siguiente enlace para reestablecer tu contraseña: " + link);
+            helper.setText(mensajeHtml, true);
 
             javaMailSender.send(message);
-        }catch (Exception ex){
-            throw new RuntimeException("error al enviar el correo: " + ex.getMessage(), ex);
+        } catch (Exception ex) {
+            throw new RuntimeException("Error al enviar el correo: " + ex.getMessage(), ex);
         }
     }
+
 
     @Override
     public void enviarEmailContraseniaRecuperada(String emailDestinatario, String nuevacContrasenia) {

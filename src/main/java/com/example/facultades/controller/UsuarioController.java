@@ -14,6 +14,7 @@ import com.example.facultades.service.IEmailService;
 import com.example.facultades.service.ITokenVerificacionEmailService;
 import com.example.facultades.service.IUsuarioService;
 import com.example.facultades.service.RecaptchaService;
+import com.example.facultades.util.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,9 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
     @Autowired
     private RecaptchaService recaptchaService;
 
+    @Autowired
+    JwtUtil jwtUtil;
+
     @GetMapping("/findUsernamesByUniversidadId/{id}")
     public ResponseEntity<MensajeRetornoSimple> findUsernamesByUniversidadId(@PathVariable Long id){
         return ResponseEntity.ok(usuarioService.findUsernamesByUniversidadId(id));
@@ -62,37 +66,36 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
 
 
     @PostMapping("/registro")
-    public ResponseEntity<MensajeRetornoSimple> save(@RequestBody RegistroRequest registroRequest)  {
+    public ResponseEntity<MensajeRetornoSimple> save(@RequestBody RegistroRequest registroRequest) {
 
         boolean isCaptchaValid = recaptchaService.verifyRecaptcha(registroRequest.captchaToken());
-
         if (!isCaptchaValid) {
-           throw new CaptchaException();
+            throw new CaptchaException();
         }
 
         Usuario usuarioBuscado = usuarioService.buscarUsuarioPorNombre(registroRequest.email());
         Usuario usuarioBuscadoNick = usuarioService.buscarUsuarioPorNick(registroRequest.nick());
 
-        // Verificar si el nick ya está en uso
+        // Si el usuario con el email ya existe
+        if (usuarioBuscado != null) {
+            // Si el email no ha sido verificado, se elimina y se crea uno nuevo
+            if (!usuarioBuscado.isEmailVerified()) {
+                genericUsuarioService.delete(usuarioBuscado.getId());
+                return this.crearUsuario(registroRequest);
+            }
+            // Si el usuario ya está verificado, se lanza la excepción
+            throw new UsuarioExistenteException();
+        }
+
+        // Si el nick ya está en uso, lanzar una excepción
         if (usuarioBuscadoNick != null) {
             throw new NickEnUsoException();
         }
 
-        // Si el usuario no existe, crearlo
-        if (usuarioBuscado == null) {
-            return this.crearUsuario(registroRequest);
-        }
-
-        // Si el usuario existe pero no ha verificado su email, eliminarlo y crear uno nuevo
-        if (!usuarioBuscado.isEmailVerified()) {
-            genericUsuarioService.delete(usuarioBuscado.getId());
-            return this.crearUsuario(registroRequest);
-        }
-
-        // Si el usuario existe y está verificado, lanzar una excepción
-        throw new UsuarioExistenteException();
-
+        // Si no hay usuario con el email ni con el nick, crear el usuario
+        return this.crearUsuario(registroRequest);
     }
+
 
     private ResponseEntity<MensajeRetornoSimple> crearUsuario(RegistroRequest registroRequest){
         Usuario usuario = new Usuario();
@@ -129,6 +132,7 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
         // Actualizar estado del usuario
         Usuario usuario = verificationToken.getUsuario();
         usuario.setEmailVerified(true);
+        usuario.setRefreshToken(usuarioService.crearRefreshToken(usuario));
         genericUsuarioService.update(usuario);
 
         // Obtener el rol del usuario
@@ -136,6 +140,10 @@ public class UsuarioController extends ControllerGeneric<Usuario, UsuarioDTO, Lo
 
         // Obtener el token y el ID del usuario
         String token2 = usuario.getRefreshToken().getToken();
+
+        //validar token
+
+
         Long idUsuario = usuario.getId();
 
         // Construir URL de redirección

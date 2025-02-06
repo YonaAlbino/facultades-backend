@@ -145,7 +145,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         TokenVerificacionEmail verificationToken = new TokenVerificacionEmail();
         verificationToken.setToken(token);
         verificationToken.setUsuario(usuario);
-        verificationToken.setFechaExpiracion(LocalDateTime.now().plusMinutes(30));
+        verificationToken.setFechaExpiracion(LocalDateTime.now().plusHours(24));
         return verificationToken;
     }
 
@@ -160,7 +160,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         usuario.setAccountNotExpired(true);
         usuario.setAccountNotLocked(true);
         usuario.setCredentialNotExpired(true);
-        usuario.setRefreshToken(crearRefreshToken(usuario));
+       // usuario.setRefreshToken(crearRefreshToken(usuario));
     }
 
     private void asociarRoles(Usuario usuario) {
@@ -178,15 +178,35 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         Optional<Usuario> usuarioBuscado = this.findById(idUsuario);
         if (usuarioBuscado.isPresent()) {
             Usuario usuario = usuarioBuscado.get();
-            if(usuario.getInfracciones() <= 3){
+            if(usuario.getInfracciones() < 3){
                 // Incrementar las infracciones
                 usuario.setInfracciones(usuario.getInfracciones() + 1);
-                emailService.enviarEmail(usuario.getUsername(),"Infracción", "Tu cuenta ha recibido una infracción por romper las normas de nuestra app. Tienes un total de  " + usuario.getInfracciones() + " infracciones, puedes acumular un máximo de 3");
+                String mensajeHtml = "<div style='font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; text-align: center;'>"
+                        + "<h2 style='color: #cc0000;'>Infracción en FacusArgs</h2>"
+                        + "<h3 style='color: #cc0000;'>Notificación de Infracción</h3>"
+                        + "<p>Tu cuenta ha recibido una infracción por romper las normas de nuestra app.</p>"
+                        + "<p>Actualmente tienes un total de <strong>" + usuario.getInfracciones() + " infracciones</strong>.</p>"
+                        + "<p>Recuerda que puedes acumular un máximo de 3 infracciones.</p>"
+                        + "<p>Te recomendamos que revises las normas de la aplicación para evitar futuras sanciones.</p>"
+                        + "<p style='color: #777;'>Este es un mensaje automático. No es necesario responder.</p>"
+                        + "</div>";
+
+                emailService.enviarEmail(usuario.getUsername(),"Infracción", mensajeHtml);
             }
             // Si el usuario ha superado las 3 infracciones, bloquear la cuenta
-            if (usuario.getInfracciones() > 3) {
-                emailService.enviarEmail(usuario.getUsername(),"Baneo", "Tu cuenta ha sido baneada por romper las normas de nuestra app");
+            if (usuario.getInfracciones() >= 3) {
+                String mensajeHtml = "<div style='font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; text-align: center;'>"
+                        + "<h2 style='color: #cc0000;'>Tu Cuenta de FacusArg Ha Sido Baneada</h2>"
+                        + "<h3 style='color: #cc0000;'>Notificación de Baneo</h3>"
+                        + "<p>Tu cuenta ha sido baneada debido a múltiples infracciones en nuestra aplicación.</p>"
+                        + "<p>Lamentablemente, no podrás acceder a tu cuenta hasta que se resuelva esta situación.</p>"
+                        + "<p>Te recomendamos que te pongas en contacto con nuestro soporte para obtener más información sobre el baneo.</p>"
+                        + "<p style='color: #777;'>Este es un mensaje automático. No es necesario responder.</p>"
+                        + "</div>";
+
+                emailService.enviarEmail(usuario.getUsername(),"Baneo", mensajeHtml);
                 usuario.setBaneada(true);
+                usuario.setInfracciones(usuario.getInfracciones() + 1);
             }
             usuarioRepo.save(usuario);
         } else {
@@ -251,6 +271,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         Utili.manejarNotificacionAdmin(MensajeNotificacionAdmin.CREACION_USUARIO.getNotificacion(), usuarioGuardado, notificacionService, notificacion);
     }
 //xD
+    @Override
     public RefreshToken crearRefreshToken(Usuario usuario){
 
        // String token = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());

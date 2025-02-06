@@ -33,6 +33,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(EmailNoVerificadoException.class)
+    public ResponseEntity<ErrorResponse> emailNoVerificadoException(Exception ex) {
+        ErrorResponse error = ErrorResponse.builder()
+                .code(409)
+                .message( ex.getMessage())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(NickEnUsoException.class)
     public ResponseEntity<ErrorResponse> nickEnUso(NickEnUsoException ex) {
         ErrorResponse error = ErrorResponse.builder()
