@@ -42,6 +42,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+
+    @ExceptionHandler(JWTVerificationException.class)
+    public ResponseEntity<ErrorResponse> JWTVerificationException(JWTVerificationException ex) {
+        ErrorResponse error = ErrorResponse.builder()
+                .code(401) // Personalizado: conflicto relacionado con usuario existente
+                .message(ex.getMessage())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+
     @ExceptionHandler(NickEnUsoException.class)
     public ResponseEntity<ErrorResponse> nickEnUso(NickEnUsoException ex) {
         ErrorResponse error = ErrorResponse.builder()

@@ -86,7 +86,7 @@ public interface IComentarioRepository extends IGenericRepository<Comentario, Lo
             LEFT JOIN comentario_lista_reaccion lr ON c.id = lr.comentario_id
             LEFT JOIN reaccion r ON lr.lista_reaccion_id = r.id  
             WHERE uc.universidad_id = :universidadId
-            GROUP BY c.id, c.mensaje, c.fecha, c.editado, c.eliminado, c.usuario_id, c.carrera_id
+            GROUP BY c.id, c.mensaje, c.fecha, c.editado, c.eliminado, c.usuario_id
             HAVING SUM(r.me_gusta) > 0 
             ORDER BY total_me_gusta DESC
             """, nativeQuery = true)
@@ -100,7 +100,7 @@ public interface IComentarioRepository extends IGenericRepository<Comentario, Lo
         LEFT JOIN comentario_lista_reaccion lr ON c.id = lr.comentario_id
         LEFT JOIN reaccion r ON lr.lista_reaccion_id = r.id  
         WHERE cc.carrera_id = :carreraId
-        GROUP BY c.id, c.mensaje, c.fecha, c.editado, c.eliminado, c.usuario_id, c.carrera_id
+        GROUP BY c.id, c.mensaje, c.fecha, c.editado, c.eliminado, c.usuario_id
         HAVING SUM(r.me_gusta) > 0
         ORDER BY total_me_gusta DESC
         """, nativeQuery = true)

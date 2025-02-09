@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface IUsuarioService {
     public String encriptPassword(String password);
-    public Usuario saveUserOauth(String email);
+    public Usuario saveUserOauth(String email, String nick, String imagenPerfil);
     public  Optional<Usuario> findUserEntityByusername(String username);
     List<Usuario> getUsuarioListByRole(String nombreRol);
     public Usuario buscarUsuarioPorNombre(String username);

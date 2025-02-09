@@ -85,9 +85,11 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
 
     @Override
     @Transactional
-    public Usuario saveUserOauth(String email) {
+    public Usuario saveUserOauth(String email, String nick, String imagenPerfil) {
         Usuario usuario = new Usuario();
         usuario.setUsername(email);
+        usuario.setNick(nick);
+        usuario.setImagen(imagenPerfil);
         usuario.setEmailVerified(true);
         usuario.setRefreshToken(crearRefreshToken(usuario));
         List<Rol> roleList = new ArrayList<>();
@@ -106,6 +108,21 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         return  usuarioRepo.save(usuario);
         //return this.save(usuario);
     }
+
+    public String crearNick(String email) {
+        StringBuilder nick = new StringBuilder();
+        int tamanioEmail = email.length();
+
+        for (int i = 0; i < tamanioEmail; i++) {
+            char caracter = email.charAt(i);
+            if (caracter == '@') {
+                break;
+            }
+            nick.append(caracter);
+        }
+        return nick.toString();
+    }
+
 
     @Override
     public Optional<Usuario> findUserEntityByusername(String username) {
@@ -160,7 +177,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
         usuario.setAccountNotExpired(true);
         usuario.setAccountNotLocked(true);
         usuario.setCredentialNotExpired(true);
-       // usuario.setRefreshToken(crearRefreshToken(usuario));
+        usuario.setRefreshToken(crearRefreshToken(usuario));
     }
 
     private void asociarRoles(Usuario usuario) {
@@ -275,7 +292,7 @@ public class UsuarioService extends GenericService<Usuario, Long> implements IUs
     public RefreshToken crearRefreshToken(Usuario usuario){
 
        // String token = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());
-        String token = jwtUtil.createRefreshToken(usuario.getUsername(), 2*60000);
+        String token = jwtUtil.createRefreshToken(usuario.getUsername(), DuracionToken.REFRESH_TOKEN.getDuracion());
         RefreshToken refreshToken = refreshTokenService.save(new RefreshToken(token));
         return refreshTokenService.save(refreshToken);
     }

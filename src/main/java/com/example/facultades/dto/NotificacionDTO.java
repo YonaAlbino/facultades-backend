@@ -26,6 +26,7 @@ public class NotificacionDTO extends BaseDTO<Notificacion> {
     private boolean  respuestaAunaRespuesta;
     private boolean carreraAgregada;
     private boolean comentarioAgregadoCarrera;
+    private boolean auditada;
     private Date fecha;
 
     // Representa solo los IDs de los usuarios en la lista

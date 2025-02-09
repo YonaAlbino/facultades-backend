@@ -60,6 +60,8 @@ public class NotificacionController extends ControllerGeneric<Notificacion, Noti
 
     @PostMapping("/visualizarNotificacionesByUserID/{userId}")
     public ResponseEntity<String> visualizarNotificacionesByUserID(@PathVariable Long userId){
+        System.out.println(userId);
+        System.out.println("error");
         String respuesta = notificacionService.visualizarNotificacionesByUserID(userId);
         String mensaje = "{\"mensaje\":\"" + respuesta + "\"}";
         return ResponseEntity.ok(mensaje);

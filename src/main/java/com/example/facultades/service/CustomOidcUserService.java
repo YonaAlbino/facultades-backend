@@ -75,10 +75,12 @@ public class CustomOidcUserService extends OidcUserService {
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         OidcUser oidcUser = super.loadUser(userRequest);
         String userName = oidcUser.getEmail();
+        String nick = oidcUser.getGivenName();
+        String imagenPerfil = oidcUser.getPicture();
 
         // Obtener o crear el usuario en la base de datos
         Usuario usuario = usuarioUservice.findUserEntityByusername(userName)
-                .orElseGet(() -> usuarioUservice.saveUserOauth(userName));
+                .orElseGet(() -> usuarioUservice.saveUserOauth(userName, nick, imagenPerfil));
 
         // Autenticar al usuario
         Authentication authentication = authenticateUser(usuario.getUsername());
