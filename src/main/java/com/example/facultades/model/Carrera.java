@@ -24,6 +24,7 @@ public class Carrera extends BaseEntity implements INotificable<Carrera>, ItipoE
     private String grado;
     private String duracion;
     private Long idUsuario;
+    private boolean eliminacionLogica;
     private boolean activa =  true;
 
    // @OneToMany(cascade = CascadeType.ALL)

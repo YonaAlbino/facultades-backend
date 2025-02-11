@@ -39,11 +39,15 @@ public class SecurityConfig {
     private CustomOidcUserService customOidcUserService;
 
     @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    @Autowired
     private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                //.exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint)) // 🔹 Agrega esta línea
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .csrf(csrf -> csrf.disable())
                 .addFilterBefore(new JwtTokenValidator(jwtUtil, usuarioService), BasicAuthenticationFilter.class)

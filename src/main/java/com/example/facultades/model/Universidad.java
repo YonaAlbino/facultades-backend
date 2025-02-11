@@ -26,6 +26,7 @@ public class Universidad extends BaseEntity implements INotificable<Universidad>
     private String direccion;
     private String descripcion;
     private String direccionWeb;
+    private boolean eliminacionLogica;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JsonManagedReference(value = "universidad-carrera")

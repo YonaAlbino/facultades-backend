@@ -1,9 +1,11 @@
 package com.example.facultades.security.filtros;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.facultades.dto.ErrorResponse;
 import com.example.facultades.model.Usuario;
 import com.example.facultades.service.IUsuarioService;
 import com.example.facultades.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -79,6 +81,7 @@ public class JwtTokenValidator extends OncePerRequestFilter {
         if (usuarioOptional.isPresent()) {
             Usuario usuario = usuarioOptional.get();
             if (usuario.isBaneada()) {
+                //System.out.println("La cuenta del usuario está bloqueada.");
                 throw new LockedException("La cuenta del usuario está bloqueada.");
             }
         } else {
@@ -89,10 +92,31 @@ public class JwtTokenValidator extends OncePerRequestFilter {
      * Maneja excepciones y envía una respuesta de error al cliente.
      */
     private void handleException(HttpServletResponse response, Exception ex) throws IOException {
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+       // String errorMessage = "Unauthorized";
+        //HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+        ErrorResponse error = new ErrorResponse();
+
+        // Verifica el tipo de excepción y personaliza la respuesta en consecuencia
+        if (ex instanceof LockedException) {
+            System.out.println("cuenta baneada");
+            error.setMessage("La cuenta del usuario está bloqueada.");
+            error.setCode(403);
+        } else if (ex instanceof UsernameNotFoundException) {
+            error.setMessage( "Usuario no encontrado.");
+            error.setCode(404);
+        } else {
+           error.setMessage(ex.getMessage());
+           error.setCode(500);
+        }
+
+        // Establece el código de estado y el cuerpo de la respuesta
+        response.setStatus(error.getCode());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        String errorMessage = String.format("{\"error\": \"Unauthorized\", \"message\": \"%s\"}", ex.getMessage());
-        response.getWriter().write(errorMessage);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String responseJson = objectMapper.writeValueAsString(error);
+        response.getWriter().write(responseJson);
     }
 }
