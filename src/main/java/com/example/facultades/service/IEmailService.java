@@ -11,4 +11,5 @@ public interface IEmailService {
     void enviarCorreoVerificacionEmail(String email, String token, Long idTokenVerificador);
     void enviarCorreoRecuperacionContrasena(String email, String token, Long idTokenVerificador);
     public void enviarEmailContraseniaRecuperada(String emailDestinatario, String nuevacContrasenia);
+    public void enviarMailContacto(String correoOrigen, String mensaje);
 }

@@ -31,12 +31,18 @@ public class UniversidadController extends ControllerGeneric<Universidad, Univer
     private IgenericService<Universidad, Long> IuniversidadGenericService;
 
     @GetMapping("/obtenerTopUniversidades")
-    public ResponseEntity<List<Universidad>> obtenerPrimerasTresImagenes(
+    public ResponseEntity<List<UniversidadDTO>> obtenerPrimerasTresImagenes(
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue =  "10") int tamanio)
     {
         List<Universidad> universidades = universidadService.obtenerTopUniversidades(pagina, tamanio);
-        return new ResponseEntity<>(universidades, HttpStatus.OK);
+        List<UniversidadDTO> universidadDTOS = new ArrayList<>();
+        for (Universidad universidad : universidades){
+            if (!universidad.isEliminacionLogica()){
+                universidadDTOS.add((UniversidadDTO) IuniversidadGenericService.convertirDTO(universidad));
+            }
+        }
+        return new ResponseEntity<>(universidadDTOS, HttpStatus.OK);
     }
 
     @GetMapping("/paginadas")

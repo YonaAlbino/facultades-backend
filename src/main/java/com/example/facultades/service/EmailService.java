@@ -129,5 +129,25 @@ public class EmailService implements IEmailService{
         }
     }
 
+    @Override
+    public void enviarMailContacto(String correoOrigen, String mensaje){
+        try {
+            String mensajeHtml = "<div style='font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; text-align: center;'>"
+                    + "<h2 style='color: #0066cc;'>Nuevo Mensaje de Contacto</h2>"
+                    + "<p><strong>Correo de origen:</strong> " + correoOrigen + "</p>"
+                    + "<p style='color: #555;'>" + mensaje + "</p>"
+                    + "<hr style='margin: 20px 0; border: 1px solid #ddd;'>"
+                    + "</div>";
 
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo("elsinrespeto050@gmail.com");
+            helper.setSubject("FacusArg");
+            helper.setText(mensajeHtml, true);
+
+            javaMailSender.send(message);
+        }catch (Exception ex){
+            throw new RuntimeException("error al enviar el correo: " + ex.getMessage(), ex);
+        }
+    }
 }
